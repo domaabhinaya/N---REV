@@ -1,0 +1,131 @@
+  }));
+
+  res.json({ date, nutrients: nutrientLines, mealLogs });
+});
+
+router.get("/profiles/:profileId/suggestions", async (req, res): Promise<void> => {
+  const params = GetSuggestionsParams.safeParse(req.params);
+  const query = GetSuggestionsQueryParams.safeParse(req.query);
+  if (!params.success || !query.success) {
+    res.status(400).json({ error: (params.error ?? query.error)?.message });
+    return;
+  }
+
+  const [profile] = await db.select().from(profilesTable).where(eq(profilesTable.id, params.data.profileId));
+  if (!profile) {
+    res.status(404).json({ error: "Profile not found" });
+    return;
+  }
+
+  const date = toDateString(query.data.date) ?? todayStr();
+  const { items, foods } = await loadDayLogs(profile.id, date);
+
+  // Get priorities - if none exist (user hasn't completed assessment), use default targets
+  const priorities = getPrioritiesWithFoodSources(profile, foods);
+  const targets = priorities.length > 0 && priorities.some((p) => p.priority !== "low")
+    ? targetsMap(priorities)
+    : { protein: 50, iron: 18, calcium: 1000, vitamin_d: 600, magnesium: 400, vitamin_a: 900, vitamin_c: 90, vitamin_b7: 30, vitamin_e: 15, vitamin_k: 120 };
+
+  const consumed = sumNutrients(
+    items.filter((i) => i.food).map((i) => ({ food: i.food as PlannerFood, servings: i.log.servings })),
+  );
+  const nutrientLines = buildNutrientLines(consumed, targets);
+
+const loggedFoodNames = new Set(items.map((i) => i.food?.name).filter((n): n is string => Boolean(n)));
+
+  const suggestions = generateSuggestions(nutrientLines, foods, profile.dietType, loggedFoodNames, {
+    symptoms: profile.symptoms,
+    hemoglobin: profile.hemoglobin,
+    ferritin: profile.ferritin,
+    vitaminDLevel: profile.vitaminDLevel,
+    vitaminB12Level: profile.vitaminB12Level,
+    serumCalcium: profile.serumCalcium,
+    totalProtein: profile.totalProtein,
+  });
+  res.json(suggestions);
+});
+
+router.get("/profiles/:profileId/dashboard", async (req, res): Promise<void> => {
+  const params = GetDashboardParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+
+  const [profile] = await db.select().from(profilesTable).where(eq(profilesTable.id, params.data.profileId));
+  if (!profile) {
+    res.status(404).json({ error: "Profile not found" });
+    return;
+  }
+
+  const foods = await db.select().from(foodsTable);
+  const priorities = getPrioritiesWithFoodSources(profile, foods);
+  const targets = targetsMap(priorities);
+  const activeNutrients = priorities.filter((p) => p.priority !== "low");
+
+  const allLogs = await db.select().from(mealLogsTable).where(eq(mealLogsTable.profileId, profile.id));
+
+  const dateSet = new Set(allLogs.map((l) => l.date));
+  const daysTracked = dateSet.size;
+
+  const last7Dates: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    last7Dates.push(d.toISOString().slice(0, 10));
+  }
+
+  const weeklyHistory = last7Dates.map(async (date) => {
+    const dayLogs = allLogs.filter((l) => l.date === date);
+    const mapped = dayLogs.map(async (l) => {
+      let food: FoodRow | undefined | null = l.foodId != null ? await db.select().from(foodsTable).where(eq(foodsTable.id, l.foodId)).then(r => r[0]) : undefined;
+      if (!food && l.customFoodName?.trim()) {
+        food = await lookupFoodByName(l.customFoodName);
+      }
+      return { food, servings: l.servings };
+    });
+    const mappedFoods = await Promise.all(mapped);
+    const totals = sumNutrients(
+      mappedFoods
+        .filter((x): x is { food: PlannerFood; servings: number } => Boolean(x.food))
+        .map((x) => ({ food: x.food as PlannerFood, servings: x.servings }))
+    );
+    return {
+      date,
+      protein: Math.round(totals.protein * 10) / 10,
+      iron: Math.round(totals.iron * 10) / 10,
+      calcium: Math.round(totals.calcium * 10) / 10,
+      vitaminD: Math.round(totals.vitaminD * 10) / 10,
+      magnesium: Math.round(totals.magnesium * 10) / 10,
+      vitaminA: Math.round(totals.vitaminA * 10) / 10,
+      vitaminC: Math.round(totals.vitaminC * 10) / 10,
+      vitaminB7: Math.round(totals.vitaminB7 * 10) / 10,
+      vitaminE: Math.round(totals.vitaminE * 10) / 10,
+      vitaminK: Math.round(totals.vitaminK * 10) / 10,
+      vitaminB12: Math.round(totals.vitaminB12 * 10) / 10,
+      folate: Math.round(totals.folate * 10) / 10,
+      zinc: Math.round(totals.zinc * 10) / 10,
+      iodine: Math.round(totals.iodine * 10) / 10,
+      potassium: Math.round(totals.potassium * 10) / 10,
+    };
+  });
+
+  const weeklyHistoryResolved = await Promise.all(weeklyHistory);
+
+  let streak = 0;
+  for (let i = 0; i < 60; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    if (dateSet.has(dateStr)) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  const daysWithLogs = last7Dates.filter((d) => dateSet.has(d));
+  const foodMap = new Map(foods.map((f) => [f.id, f] as const));
+  const foodNameToId = new Map<string, number>();
+  for (const f of foods) {
+    foodNameToId.set(normalizeFoodName(f.name), f.id);

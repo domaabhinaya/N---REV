@@ -1,0 +1,29 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> workspace@0.0.0 build
+> pnpm run typecheck && pnpm -r --if-present run build
+
+Scope: all 9 workspace projects
+✓ Lockfile passes supply-chain policies (verified 6h ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+. preinstall$ node -e "process.exit(0)"
+. preinstall: Done
+[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+
+Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+[ERROR] Command failed with exit code 1: "C:\Program Files\nodejs\node.exe" "C:\Users\Abhinaya Doma\AppData\Roaming\npm\node_modules\pnpm\bin\pnpm.mjs" install
+
+pnpm: Command failed with exit code 1: "C:\Program Files\nodejs\node.exe" "C:\Users\Abhinaya Doma\AppData\Roaming\npm\node_modules\pnpm\bin\pnpm.mjs" install
+    at getFinalError (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:36339:14)
+    at makeError (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:38646:21)
+    at getSyncResult (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:40490:10)
+    at spawnSubprocessSync (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:40450:14)
+    at execaCoreSync (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:40380:23)
+    at callBoundExeca (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:42908:23)
+    at boundExeca (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:42885:49)
+    at sync (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:43044:10)
+    at runPnpmCli (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:247663:5)
+    at runDepsStatusCheck (file:///C:/Users/Abhinaya%20Doma/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:249406:7)

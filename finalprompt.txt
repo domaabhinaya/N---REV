@@ -1,0 +1,768 @@
+Final prompt: Change the name of the project from nutrirecover to N-REV.
+
+# N-REV — Final Continuation Prompt
+
+## Critical instruction: do not rebuild the website from scratch
+
+You are working on an existing partially built N-REV codebase. Your task is to continue, complete, and upgrade the current website, not replace it or rebuild it from scratch.
+
+---
+
+# Non-negotiable engineering rules
+
+1. Do not rebuild the website from scratch.
+2. Preserve the existing working codebase, routes, components, styling system, layout patterns, and usable flows wherever possible.
+3. Reuse existing UI structure, cards, forms, dashboard sections, and navigation whenever they are compatible with the new architecture.
+4. Only refactor existing code when necessary for stability, modularity, maintainability, or real dataset integration.
+5. If a feature cannot be fully completed in one pass, still build:
+
+   * the UI shell
+   * the state structure
+   * the reusable interfaces/types
+   * the dataset-ready logic path
+     Do not skip the feature entirely.
+6. Prefer extending the existing architecture over replacing it.
+
+---
+
+# Product goal
+
+Upgrade N-REV into a polished, food-based nutritional recovery support platform.
+
+N-REV is not a diagnosis or treatment tool. It should help users understand likely nutrient recovery needs based on symptoms, optional lab values, and food habits, then provide:
+
+* food-based recovery guidance
+* personalized meal planning
+* daily meal logging
+* nutrient tracking
+* adaptive next-day food suggestions
+* progress visibility
+* optional lab-aware recovery comparison
+
+## Required disclaimer
+
+Show this clearly in the app:
+
+**“N-REV is a food-based nutritional recovery support tool and does not replace professional medical advice, diagnosis, or treatment.”**
+
+---
+
+# Current implementation context
+
+A real cleaned N-REV food nutrient dataset is now available and must be integrated into the app.
+
+Use the final cleaned dataset as the production nutrition source for:
+
+* food lookup
+* food alias matching
+* nutrient lookup
+* meal nutrient calculation
+* baseline food habits analysis
+* personalized recovery meal planning
+* daily meal logging
+* nutrient target comparison
+* adaptive next-day suggestions
+* dashboard summaries
+* recovery progress insights
+
+Do not keep the app dependent on placeholder nutrition logic where the real cleaned dataset can be used instead.
+
+---
+
+# Product structure
+
+The app should be organized into a clear recovery workflow with one entry experience and four main panels:
+
+* **Panel 0 — Entry / Welcome**
+* **Panel 1 — Recovery Assessment**
+* **Panel 2 — Existing Food Habits**
+* **Panel 3 — Recovery Guidance**
+* **Panel 4 — Unified Progress & Tracking Workspace**
+
+The experience should feel like one cohesive health-tech product, not disconnected pages.
+
+---
+
+# Implementation priority — follow this order
+
+## Phase 1 — Audit and preserve the existing app
+
+Before making major changes:
+
+* inspect the current codebase
+* understand current routing
+* understand the shared layout
+* understand reusable components
+* identify what already works
+* identify placeholder or incomplete sections
+* preserve stable parts wherever possible
+
+Do not break working features unnecessarily.
+
+## Phase 2 — Complete the main product flow and page structure
+
+Implement or complete the main flow in this order:
+
+1. Entry / Welcome
+2. Recovery Assessment
+3. Existing Food Habits
+4. Recovery Guidance
+5. Unified Progress & Tracking Workspace
+
+If deeper nutrient logic is not fully ready at first, still complete:
+
+* page structure
+* cards
+* tabs / sections
+* state flow
+* component shells
+* dataset integration hooks
+
+## Phase 3 — Build the nutrient and recovery logic layer
+
+After the product flow is in place, implement:
+
+* nutrient priority logic
+* assessment scoring logic
+* food habit analysis logic
+* meal-plan nutrient scoring logic
+* daily nutrient aggregation
+* nutrient target comparison
+* adaptive suggestion logic
+* dashboard summaries
+* recovery progress insights
+
+## Phase 4 — Replace placeholder nutrition logic with the real dataset pipeline
+
+Use the real cleaned N-REV dataset to replace placeholder nutrition logic wherever feasible, while preserving app stability and modularity.
+
+---
+
+# Nutrient scope
+
+## Tier 1 nutrients — must be fully integrated
+
+These must work consistently across:
+
+* assessment outputs
+* recovery priorities
+* food habits analysis
+* meal planning
+* daily meal tracking
+* dashboard summaries
+* adaptive suggestions
+* recovery progress insights
+
+### Tier 1 nutrients
+
+* Protein
+* Iron
+* Calcium
+* Vitamin D
+
+## Tier 2 nutrients — support wherever the dataset contains usable values
+
+These should use the same architecture, but the app must fail gracefully if some foods or calculations do not have complete coverage.
+
+### Tier 2 nutrients
+
+* Magnesium
+* Vitamin A
+* Vitamin C
+* Vitamin B7
+* Vitamin E
+* Vitamin K
+
+## Dataset alignment rule
+
+The live production nutrition pipeline must use only nutrients that actually exist in the final cleaned N-REV dataset.
+
+* Do not invent unsupported nutrient fields.
+* Do not add synthetic enrichment layers for nutrients that are not part of the production dataset.
+* If older code contains logic or UI for nutrients not present in the real cleaned dataset, remove or disable those references so the app stays aligned with the actual data.
+
+---
+
+# Required data / engineering architecture
+
+## Create reusable types / interfaces / models for:
+
+* nutrient definitions / metadata
+* food item model
+* food alias model
+* meal log item model
+* daily nutrient summary model
+* weekly nutrient summary model
+* assessment result model
+* nutrient priority model
+* recovery plan model
+* adaptive suggestion model
+* lab progress model
+* dashboard card model
+* onboarding profile model
+
+## Create reusable utilities / services for:
+
+* food name normalization
+* food alias matching
+* food lookup
+* nutrient lookup by food
+* serving / quantity scaling
+* meal nutrient calculation
+* daily nutrient aggregation
+* weekly nutrient aggregation
+* nutrient target comparison
+* nutrient completion percentage calculation
+* recovery priority scoring
+* meal plan nutrient scoring
+* adaptive next-day suggestion generation
+* progress trend generation
+
+## State / data layer should support:
+
+* onboarding profile state
+* symptom state
+* lab input state
+* food habits state
+* meal plan state
+* daily meal logs state
+* nutrient summary state
+* dashboard state
+* recovery progress state
+
+---
+
+# Recovery plan duration
+
+Add an onboarding field for **Recovery Plan Duration**.
+
+## Options
+
+* 15 days
+* 30 days
+* 45 days
+* custom number of days
+
+Default: **30 days**
+
+## V1 meal plan rule
+
+For V1, generate a strong personalized **7-day recovery meal plan template**, then repeat or adapt that 7-day structure across the selected recovery duration.
+
+Examples:
+
+* 15 days → adapt the 7-day structure
+* 30 days → repeat/adapt the 7-day structure
+* 45 days → rotate/adapt the 7-day structure
+
+Do not try to generate 30–45 completely unique days in V1.
+
+---
+
+# Panel-by-panel build requirements
+
+# PANEL 0 — ENTRY / WELCOME
+
+Create a polished opening experience that acts as the app’s first impression.
+
+It should include:
+
+* app name
+* short subtitle
+* 1-line explanation of what N-REV does
+* visible disclaimer
+* 3–4 trust / benefit bullets
+* CTA button such as **“Start My Recovery Plan”**
+
+The design should feel warm, polished, simple, and health-tech oriented.
+
+---
+
+# PANEL 1 — RECOVERY ASSESSMENT
+
+Build a clean, step-based guided assessment form.
+
+## Collect:
+
+* name
+* age
+* gender
+* height
+* weight
+* diet type: vegetarian / eggetarian / non-vegetarian / vegan
+* allergies / restrictions
+* cuisine preference
+* budget preference
+* recovery duration
+
+## Symptoms checklist
+
+Include:
+
+* fatigue
+* weakness
+* hair fall
+* pale skin
+* dizziness
+* muscle cramps
+* bone pain
+* poor immunity
+* tingling / numbness
+* brain fog
+* poor appetite
+* brittle nails
+* slow recovery
+* low energy
+
+## Optional lab inputs
+
+Keep optional:
+
+* hemoglobin
+* ferritin
+* vitamin D
+* serum calcium
+* total protein / albumin
+
+## Assessment output
+
+Use symptoms + optional lab values + profile context to infer likely nutrient recovery priorities.
+
+For each nutrient shown, display:
+
+* priority score
+* high / medium / low priority
+* short explanation
+* suggested daily target or support goal
+* short food-based recovery note
+
+Use safe, non-diagnostic language such as:
+
+* possible nutrient gap
+* recovery support needed
+* intake improvement recommended
+* may need better dietary support
+* food-based recovery focus suggested
+
+Do not present results as a medical diagnosis.
+
+---
+
+# PANEL 2 — EXISTING FOOD HABITS
+
+Create a food habits panel asking what the user normally eats in a typical day or week.
+
+## Capture foods for:
+
+* breakfast
+* lunch
+* dinner
+* snacks
+* beverages
+
+## Allow:
+
+* multiple food items
+* quantity / servings / frequency
+* repeated weekly habits
+* foods avoided / disliked
+* common repeated meals
+* useful cuisine patterns if needed
+
+This panel should help estimate:
+
+* current protein sources
+* current iron / calcium / vitamin D support patterns
+* dairy / egg / meat / plant protein / greens / fruit intake habits
+* likely nutrient coverage gaps in the baseline diet
+
+The UX should feel easy and conversational, not clinical.
+
+---
+
+# PANEL 3 — RECOVERY GUIDANCE
+
+This should be the most visually attractive and beginner-friendly panel.
+
+It must include:
+
+## A) Recovery Focus Summary
+
+Show active nutrient priorities clearly, for example:
+
+* high protein support
+* iron recovery support
+* calcium improvement needed
+* vitamin D support recommended
+
+## B) “Start With These Foods” starter section
+
+Before the full plan, show a highlighted food list of foods the user should begin adding immediately based on their nutrient priorities.
+
+Each food should have a one-line reason such as:
+
+* curd → protein + calcium
+* eggs → protein
+* rajma → iron + protein
+* amla → vitamin C support
+* spinach → iron + vitamin K support
+* pumpkin seeds → magnesium support
+
+## C) Personalized Recovery Plan
+
+Generate a personalized 7-day recovery meal plan template based on:
+
+* nutrient priorities
+* diet type
+* allergies
+* cuisine preference
+* budget
+* current food habits
+* disliked foods
+
+Each day should include:
+
+* breakfast
+* lunch
+* dinner
+* 1–2 snacks
+
+For each day, show estimated nutrient support.
+
+### Tier 1 daily support must show:
+
+* protein
+* iron
+* calcium
+* vitamin D
+
+### Tier 2 should show when available:
+
+* magnesium
+* vitamin A
+* vitamin C
+* vitamin B7
+* vitamin E
+* vitamin K
+
+Also show:
+
+* daily totals
+* target comparison
+* on-target / needs-improvement labels
+* optional daily nutrient coverage score or recovery score
+
+## D) CTA
+
+Add a strong CTA at the bottom such as:
+
+* **Log today’s meals**
+  or
+* **Start tracking today**
+
+---
+
+# PANEL 4 — UNIFIED PROGRESS & TRACKING WORKSPACE
+
+Do not make daily tracking, suggestions, dashboard, and progress separate top-level pages.
+
+Instead create one unified dashboard-style workspace with four internal sections:
+
+1. Daily Meal Tracking
+2. Adaptive Next-Day Suggestions
+3. Dashboard
+4. Recovery Progress
+
+Use tabs, segmented sections, accordions, or collapsible cards to keep it clean.
+
+---
+
+# PANEL 4A — DAILY MEAL TRACKING
+
+Allow the user to log what they actually ate today:
+
+* breakfast
+* lunch
+* dinner
+* snacks
+* quantities / servings
+
+Estimate nutrient intake from the meal log.
+
+## Tier 1 tracking must support:
+
+* protein
+* iron
+* calcium
+* vitamin D
+
+## Tier 2 where available:
+
+* magnesium
+* vitamin A
+* vitamin C
+* vitamin B7
+* vitamin E
+* vitamin K
+
+Show:
+
+* target vs actual
+* progress bars
+* nutrients met
+* nutrient deficits
+* short daily summary
+* optional daily nutrient score
+
+---
+
+# PANEL 4B — ADAPTIVE NEXT-DAY SUGGESTIONS
+
+Based on actual intake, generate next-day practical suggestions.
+
+For each missed nutrient:
+
+* explain simply why target was missed
+* suggest 3–5 realistic food additions or swaps
+* estimate how those additions improve intake
+* keep suggestions practical, affordable, and aligned with diet preference
+
+Examples:
+
+* low protein → paneer / eggs / curd / dal / soy / chicken
+* low iron → spinach + lemon / rajma / dates / roasted chana
+* low calcium → curd / milk / ragi / sesame / tofu
+* low vitamin D → food suggestions + sunlight reminder
+* low vitamin C → amla / guava / citrus / capsicum
+
+Tone must feel supportive, not guilt-based.
+
+---
+
+# PANEL 4C — DASHBOARD
+
+Inside the same workspace, include a dashboard section showing:
+
+* active nutrient recovery areas
+* today’s intake vs target
+* weekly adherence
+* streak / days tracked
+* nutrient completion percentages
+* trend charts
+* top nutrient needing attention
+* strongest nutrient area
+* recent recovery score
+
+Tier 1 dashboard support must be complete.
+Tier 2 should degrade gracefully if some values are missing.
+
+---
+
+# PANEL 4D — RECOVERY PROGRESS
+
+Support two modes.
+
+## Mode A — if lab reports / follow-up labs are available
+
+Show a lab comparison section with:
+
+* initial / baseline lab values
+* follow-up values
+* numerical change
+* status such as Improved / Stable / Needs Attention
+
+Support markers such as:
+
+* Hemoglobin
+* Ferritin
+* Vitamin D
+* Serum Calcium
+* Total Protein / Albumin
+
+Also show:
+
+* recovery summary card
+* days tracked
+* adherence score
+* markers improved
+* strongest progress area
+* area needing support
+* short insight cards
+* suggested next steps
+
+## Mode B — if labs are not available
+
+Do not show an empty lab form. Instead show a tracking-based progress dashboard using meal logs and nutrient adherence.
+
+Show:
+
+* days tracked
+* weekly adherence score
+* nutrient target completion rates
+* progress trends
+* strongest and weakest recovery areas
+* insight cards such as:
+
+  * protein intake improved compared to week 1
+  * iron support is improving
+  * calcium still needs attention
+  * vitamin C intake consistency improved
+
+Use safe language such as:
+
+* shows improvement
+* suggests recovery progress
+* indicates better nutritional support
+* may still need attention
+
+---
+
+# Real dataset food intelligence layer
+
+The cleaned N-REV food dataset is available and should now power the app’s nutrition pipeline.
+
+The food layer must support:
+
+* food lookup
+* food alias matching
+* nutrient calculation by serving
+* meal-log nutrient estimation
+* nutrient target comparison
+* baseline food habits analysis
+* meal plan generation
+* adaptive next-day suggestions
+* dashboard summaries
+* recovery insights
+
+Design this around common Indian foods and practical household foods.
+
+Use the cleaned dataset as the production nutrition source instead of keeping these flows dependent on placeholder data.
+
+---
+
+# UI / design requirements
+
+The app must look polished, modern, friendly, and hackathon-showcase ready.
+
+## Design direction
+
+Use a health + wellness dashboard aesthetic:
+
+* clean white / soft off-white background
+* teal / green / blue accents
+* amber / orange for low nutrient alerts
+* rounded cards
+* soft shadows
+* spacious layout
+* modern typography
+* premium dashboard feel
+* responsive on desktop and mobile
+
+The app should feel like:
+
+* a real digital wellness platform
+* a personalized health-tech recovery product
+* a polished hackathon demo
+
+It should not feel like:
+
+* a hospital form
+* a generic student project
+* a static nutrition chart site
+
+---
+
+# Special UI requirements
+
+Panel 3 should be the most attractive panel.
+
+Add:
+
+* a hero card like **“Your recovery journey starts here”**
+* nutrient priority badges
+* highlighted starter food cards
+* clean recovery plan cards or tables
+
+Subtle wellness illustrations are optional, but do not let decorative work slow down core product implementation.
+
+---
+
+# Output expectations
+
+At the end, clearly summarize:
+
+## 1) What was preserved
+
+* routes kept
+* components reused
+* existing flows preserved
+
+## 2) What was added or changed
+
+* new panels / sections
+* new state models
+* new utilities / services
+* dataset integration work
+* meal planning / tracking / dashboard logic
+
+## 3) What is fully functional now
+
+* which flows work end-to-end
+* which panels are interactive
+* which nutrient calculations are implemented
+* which modules now use the real cleaned dataset
+
+## 4) What is still placeholder or partially connected
+
+* any remaining mock food logic
+* any modules still waiting for deeper dataset wiring
+* any UI sections completed before final nutrient logic
+
+## 5) What files or modules were created or modified
+
+Give a clear summary of touched files and the purpose of each.
+
+---
+
+# Final goal
+
+Transform the current N-REV app into a complete, polished nutritional recovery support platform that is strong enough for a hackathon showcase.
+
+The final app must include:
+
+1. a clear welcome / entry experience
+2. recovery duration selection
+3. recovery assessment
+4. existing food habits panel
+5. recovery guidance with starter foods + personalized plan
+6. one unified Progress & Tracking workspace with:
+
+   * daily meal tracking
+   * adaptive next-day suggestions
+   * dashboard
+   * recovery progress
+7. optional lab comparison mode
+8. non-lab tracking-based progress mode
+9. Tier 1 nutrients fully integrated:
+
+   * Protein
+   * Iron
+   * Calcium
+   * Vitamin D
+10. Tier 2 nutrients supported where data exists:
+
+* Magnesium
+* Vitamin A
+* Vitamin C
+* Vitamin B7
+* Vitamin E
+* Vitamin K
+
+11. reusable real-dataset-connected food / nutrient architecture
+12. a 7-day personalized recovery meal plan template that adapts across the selected duration
+13. a clean, professional, trustworthy health-tech UI
+14. a cohesive, demo-ready product experience
+
+## Most important instruction
+
+Do not throw away the existing app structure unless absolutely necessary. Upgrade the current N-REV codebase intelligently, preserve what works, connect the real cleaned dataset, and make the result cohesive, scalable, production-safe, and demo-ready.

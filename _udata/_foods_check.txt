@@ -1,0 +1,7 @@
+﻿health 200
+foods 200
+foods total=82073 itemKeyCount=23
+hasAll15=true
+sample: {"name":"&quot;00&quot; farina flour","id":78327,"vitaminB1":0,"vitaminB6":0,"vitaminB12":0,"tier":"extended"}
+non-zero B per 500-sample: {"b1":1,"b2":0,"b3":0,"b6":0,"b12":0}
+B-rich sample: {"name":"12 sticks Nesquik","vitaminB1":0.0007,"vitaminB2":0,"vitaminB3":0,"vitaminB6":0,"vitaminB12":0}

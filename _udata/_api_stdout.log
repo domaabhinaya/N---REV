@@ -1,0 +1,509 @@
+◇ injected env (2) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+[21:25:06.701] [32mINFO[39m (31688): [36mServer listening[39m
+    [35mport[39m: 8099
+[21:30:17.833] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 1,
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 21
+[Backend] POST /api/profiles — Request body received
+[Backend] Raw body keys: [
+  'name',              'age',
+  'gender',            'heightCm',
+  'weightKg',          'dietType',
+  'symptoms',          'allergies',
+  'cuisinePreference', 'budget',
+  'hemoglobin',        'ferritin',
+  'vitaminB12Level',   'vitaminDLevel',
+  'serumCalcium',      'totalProtein',
+  'recoveryDuration',  'foodHabits'
+]
+[Backend] Raw body: {
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "symptoms": [],
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null
+}
+[Backend] Insert payload: {
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "symptoms": [],
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null
+}
+[Backend] Insert payload keys: [
+  'name',              'age',
+  'gender',            'heightCm',
+  'weightKg',          'dietType',
+  'symptoms',          'allergies',
+  'cuisinePreference', 'budget',
+  'hemoglobin',        'ferritin',
+  'vitaminB12Level',   'vitaminDLevel',
+  'serumCalcium',      'totalProtein',
+  'recoveryDuration',  'foodHabits'
+]
+[21:30:49.441] [32mINFO[39m (31688): [36mrequest errored[39m
+    [35mreq[39m: {
+      "id": 2,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 500
+    }
+    [35mresponseTime[39m: 31561
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:28797:45)
+              at ServerResponse.onResponseComplete (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:28847:18)
+              at ServerResponse.emit (node:events:521:24)
+              at onFinish (node:_http_outgoing:1031:10)
+              at callback (node:internal/streams/writable:764:21)
+              at afterWrite (node:internal/streams/writable:708:5)
+              at afterWriteTick (node:internal/streams/writable:694:10)
+              at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[Backend] Insert succeeded, row ID: 10
+[Backend] Row data: {
+  "id": 10,
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "symptoms": [],
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null,
+  "createdAt": "2026-08-11T16:00:53.078Z"
+}
+[21:30:52.322] [32mINFO[39m (31688): [36mrequest errored[39m
+    [35mreq[39m: {
+      "id": 3,
+      "method": "POST",
+      "url": "/api/profiles"
+    }
+    [35mres[39m: {
+      "statusCode": 500
+    }
+    [35mresponseTime[39m: 2852
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:28797:45)
+              at ServerResponse.onResponseComplete (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:28847:18)
+              at ServerResponse.emit (node:events:521:24)
+              at onFinish (node:_http_outgoing:1031:10)
+              at callback (node:internal/streams/writable:764:21)
+              at afterWrite (node:internal/streams/writable:708:5)
+              at afterWriteTick (node:internal/streams/writable:694:10)
+              at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+    }
+[22:17:40.427] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 4,
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 23
+[Backend] POST /api/profiles — Request body received
+[Backend] Raw body keys: [
+  'name',              'age',
+  'gender',            'heightCm',
+  'weightKg',          'dietType',
+  'symptoms',          'allergies',
+  'cuisinePreference', 'budget',
+  'hemoglobin',        'ferritin',
+  'vitaminB12Level',   'vitaminDLevel',
+  'serumCalcium',      'totalProtein',
+  'recoveryDuration',  'foodHabits'
+]
+[Backend] Raw body: {
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "symptoms": [],
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null
+}
+[Backend] Insert payload: {
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "symptoms": [],
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null
+}
+[Backend] Insert payload keys: [
+  'name',              'age',
+  'gender',            'heightCm',
+  'weightKg',          'dietType',
+  'symptoms',          'allergies',
+  'cuisinePreference', 'budget',
+  'hemoglobin',        'ferritin',
+  'vitaminB12Level',   'vitaminDLevel',
+  'serumCalcium',      'totalProtein',
+  'recoveryDuration',  'foodHabits'
+]
+[22:17:44.127] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 5,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 3682
+[Backend] Insert succeeded, row ID: 11
+[Backend] Row data: {
+  "id": 11,
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "symptoms": [],
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null,
+  "createdAt": "2026-08-11T16:47:45.517Z"
+}
+[22:17:52.554] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 6,
+      "method": "POST",
+      "url": "/api/profiles"
+    }
+    [35mres[39m: {
+      "statusCode": 201
+    }
+    [35mresponseTime[39m: 8404
+[22:18:11.743] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 7,
+      "method": "GET",
+      "url": "/api/profiles/11/recovery-plan"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 19182
+[22:18:23.579] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 8,
+      "method": "GET",
+      "url": "/api/profiles/11/targets"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 11830
+[22:48:19.919] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 9,
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 35
+[Backend] POST /api/profiles — Request body received
+[Backend] Raw body keys: [
+  'name',              'age',
+  'gender',            'heightCm',
+  'weightKg',          'dietType',
+  'symptoms',          'allergies',
+  'cuisinePreference', 'budget',
+  'hemoglobin',        'ferritin',
+  'vitaminB12Level',   'vitaminDLevel',
+  'serumCalcium',      'totalProtein',
+  'recoveryDuration',  'foodHabits'
+]
+[Backend] Raw body: {
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "symptoms": [],
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null
+}
+[Backend] Insert payload: {
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "symptoms": [],
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null
+}
+[Backend] Insert payload keys: [
+  'name',              'age',
+  'gender',            'heightCm',
+  'weightKg',          'dietType',
+  'symptoms',          'allergies',
+  'cuisinePreference', 'budget',
+  'hemoglobin',        'ferritin',
+  'vitaminB12Level',   'vitaminDLevel',
+  'serumCalcium',      'totalProtein',
+  'recoveryDuration',  'foodHabits'
+]
+[Backend] Insert succeeded, row ID: 12
+[Backend] Row data: {
+  "id": 12,
+  "name": "Test User",
+  "age": 22,
+  "gender": "female",
+  "heightCm": 165,
+  "weightKg": 58,
+  "dietType": "vegetarian",
+  "allergies": "",
+  "cuisinePreference": null,
+  "budget": "5000",
+  "symptoms": [],
+  "hemoglobin": 12.5,
+  "ferritin": 60,
+  "vitaminB12Level": 450,
+  "vitaminDLevel": 35,
+  "serumCalcium": 9.5,
+  "totalProtein": 7.2,
+  "recoveryDuration": 30,
+  "foodHabits": null,
+  "createdAt": "2026-08-11T17:18:25.300Z"
+}
+[22:48:23.873] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 10,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 3915
+[22:48:48.639] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 11,
+      "method": "POST",
+      "url": "/api/profiles"
+    }
+    [35mres[39m: {
+      "statusCode": 201
+    }
+    [35mresponseTime[39m: 24748
+[22:49:33.276] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 12,
+      "method": "GET",
+      "url": "/api/profiles/12/recovery-plan"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 44611
+[22:49:55.334] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 13,
+      "method": "GET",
+      "url": "/api/profiles/12/targets"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 22032
+[22:53:20.006] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 14,
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 4
+[22:53:22.143] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 15,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2110
+[22:53:23.878] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 16,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1728
+[22:54:56.308] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 17,
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2
+[22:54:58.423] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 18,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2099
+[22:54:59.692] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 19,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1262
+[22:56:58.694] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 20,
+      "method": "GET",
+      "url": "/api/healthz"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1
+[22:57:01.121] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 21,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 2389
+[22:57:02.371] [32mINFO[39m (31688): [36mrequest completed[39m
+    [35mreq[39m: {
+      "id": 22,
+      "method": "GET",
+      "url": "/api/foods"
+    }
+    [35mres[39m: {
+      "statusCode": 200
+    }
+    [35mresponseTime[39m: 1244

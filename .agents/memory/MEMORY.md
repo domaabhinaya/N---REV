@@ -1,0 +1,1 @@
+- [Orval query hook queryKey requirement](orval-query-hooks.md) — passing `enabled` to a generated TanStack Query hook's `query` option requires also passing `queryKey` explicitly, or typecheck fails.

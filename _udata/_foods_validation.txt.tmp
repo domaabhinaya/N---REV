@@ -1,0 +1,16 @@
+﻿node : file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/_udata/verify_foods.mjs:24
+At line:1 char:68
++ ... eDrive\Desktop\N-REV-main'; node _udata/verify_foods.mjs 2>&1 | Out-F ...
++                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///C:/User...fy_foods.mjs:24:String) [], RemoteEx 
+   ception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  require("fs").writeFileSync("./_udata/_foods_validation.txt", out.join("\n"));
+  ^
+
+ReferenceError: require is not defined
+    at file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/_udata/verify_foods.mjs:24:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v24.18.0

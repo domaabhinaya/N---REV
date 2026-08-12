@@ -1,0 +1,467 @@
+Build a complete **hackathon-ready MVP web app** called **NutriRecover** — an AI-assisted **nutritional deficiency recovery support platform**.
+
+## Product Goal
+
+NutriRecover should help users with **suspected or diagnosed nutritional deficiencies** understand whether their **daily meals are supporting recovery**. It should bridge the gap between **symptoms / optional lab reports** and **daily food tracking + recovery-focused meal planning**.
+
+The app must:
+
+1. Take **symptoms + optional lab values + user profile**
+2. Infer likely **nutrient recovery focus areas** (not medical diagnosis)
+3. Generate a **30–40 day food-based recovery plan**
+4. Let users **log daily meals**
+5. Compare intake vs **daily recovery nutrient targets**
+6. Detect missed targets and give **next-day food additions/substitutions**
+7. Show **progress dashboards**
+8. Optionally compare **baseline vs follow-up lab values**
+
+---
+
+# Important Rules
+
+* This is a **nutrition recovery support app**, **not a diagnosis tool**.
+* Use phrases like:
+
+  * “possible nutrient gap”
+  * “recovery nutrition support”
+  * “dietary recovery target”
+* Avoid saying the app diagnoses disease.
+* Add a disclaimer in the UI:
+
+  > NutriRecover is a food-based nutritional recovery support tool and does not replace professional medical advice, diagnosis, or treatment.
+
+---
+
+# Nutrients to Support in MVP
+
+Focus on these 5 nutrient areas:
+
+* **Protein**
+* **Iron**
+* **Calcium**
+* **Vitamin B12**
+* **Vitamin D**
+
+---
+
+# Core Features
+
+## 1) Intake / Assessment
+
+Create a form to collect:
+
+* name, age, gender, height, weight
+* diet type: vegetarian / eggetarian / non-vegetarian / vegan
+* allergies / restrictions
+* cuisine preference / budget (optional)
+
+### Symptoms checklist
+
+Include symptoms like:
+
+* fatigue, weakness, hair fall, pale skin, dizziness, muscle cramps, bone pain, poor immunity, tingling/numbness, brain fog, poor appetite, brittle nails, slow recovery, low energy
+
+### Optional lab inputs
+
+* hemoglobin
+* ferritin
+* vitamin B12
+* vitamin D
+* serum calcium
+* total protein / albumin
+
+### Output
+
+Infer **recovery focus areas** such as:
+
+* possible iron recovery support needed
+* likely low protein intake risk
+* B12 support recommended
+* calcium intake improvement recommended
+* vitamin D support recommended
+
+Do **not** call it a diagnosis.
+
+---
+
+## 2) Recovery Engine
+
+Build a **rule-based nutrient recovery engine** that maps symptoms + labs + user profile into nutrient priorities.
+
+For each nutrient:
+
+* assign a **priority score**
+* assign **high / medium / low priority**
+* define **daily recovery target**
+* generate **reasoning**
+* attach recommended foods
+
+Example logic:
+
+* fatigue + low hemoglobin/ferritin → iron priority up
+* vegetarian + fatigue + low B12 → B12 priority up
+* weakness + low protein / underweight → protein priority up
+* bone pain / cramps / low calcium → calcium priority up
+* low vitamin D / poor sunlight support → vitamin D support flag
+
+Return a structured output like:
+
+* nutrient
+* score
+* priority
+* target per day
+* reasons
+* suggested food sources
+
+---
+
+## 3) 30–40 Day Recovery Plan
+
+Generate a **personalized 30–40 day food-based meal plan** using:
+
+* nutrient priorities
+* diet type
+* allergies
+* cuisine preference
+* budget
+
+Each day should include:
+
+* breakfast
+* lunch
+* dinner
+* 1–2 snacks
+
+For each day calculate estimated:
+
+* protein
+* iron
+* calcium
+* vitamin B12
+* vitamin D
+
+Also show:
+
+* daily nutrient totals
+* target comparison
+* “on target” / “needs improvement” status
+
+Default food system should be **Indian-food friendly**.
+
+---
+
+## 4) Daily Meal Tracking
+
+Create a page where users can log:
+
+* breakfast / lunch / dinner / snacks
+* food item
+* quantity / serving
+
+After logging meals:
+
+* total daily nutrients
+* compare against daily targets
+* show progress bars for protein, iron, calcium, B12, vitamin D
+* highlight deficits clearly
+
+Example:
+
+* Protein: 42g / 65g
+* Iron: 14mg / 18mg
+* Calcium: 550mg / 1000mg
+
+---
+
+## 5) Smart Suggestions
+
+If a nutrient target is missed, generate **next-day recovery suggestions**.
+
+Examples:
+
+* low protein → paneer / eggs / curd / dal / soy / chicken
+* low iron → spinach + lemon / rajma / dates / roasted chana / eggs / meat
+* low B12 → dairy / eggs / fish / fortified foods
+* low calcium → curd / milk / paneer / ragi / sesame / tofu
+* low vitamin D → food suggestions + sunlight reminder
+
+For each missed nutrient show:
+
+* why it was missed
+* 3–5 additions or swaps
+* expected improvement if followed tomorrow
+
+---
+
+## 6) Progress Dashboard
+
+Build a dashboard with:
+
+* active recovery nutrients
+* today’s intake vs targets
+* weekly adherence score
+* days tracked / streak
+
+Include charts for:
+
+* daily protein vs target
+* iron vs target
+* calcium vs target
+* B12 vs target
+* vitamin D support vs target
+
+Show simple insights like:
+
+* “Protein target met on 5 of last 7 days”
+* “Calcium remains consistently below target”
+* “Iron intake improved vs week 1”
+
+---
+
+## 7) Optional Lab Comparison
+
+Allow entry of:
+
+* baseline lab values
+* follow-up lab values after ~30 days
+
+Show:
+
+* what improved
+* what still needs support
+* which nutrient recovery areas still need dietary focus
+
+Again, no diagnosis language.
+
+---
+
+# Tech Stack
+
+Use this stack unless there is a strong reason not to:
+
+* **Next.js 14+ App Router**
+* **TypeScript**
+* **Tailwind CSS**
+* **shadcn/ui**
+* **Recharts**
+* **PostgreSQL + Prisma**
+
+Use Next.js full-stack architecture with clean API routes or server actions.
+
+---
+
+# Database / Prisma Models
+
+Create proper Prisma models for:
+
+* **User**
+* **IntakeProfile / SymptomLog**
+* **NutrientTargetProfile**
+* **RecoveryPlan**
+* **RecoveryPlanDay**
+* **MealLog**
+* **DailyNutritionSummary**
+* **LabComparison** (optional)
+
+Fields should support:
+
+* user profile
+* symptoms
+* optional lab values
+* nutrient targets
+* 30–40 day plan storage
+* daily meal logs
+* daily nutrient totals
+* adherence scores
+* lab comparison data
+
+---
+
+# Food Dataset / Seed Data
+
+Create a structured food nutrient dataset with **40–80 common foods**, especially Indian foods.
+
+Each food should include:
+
+* name
+* serving size
+* protein
+* iron
+* calcium
+* vitamin B12
+* vitamin D
+* diet tags
+* meal tags
+* cuisine tags
+
+Include foods like:
+
+* milk, curd, paneer, tofu, soy chunks, dal, rajma, chana, spinach, ragi, sesame, peanuts, almonds, eggs, chicken, fish, mushrooms, oats, sprouts, banana, dates, jaggery, chickpeas, fortified cereals, etc.
+
+Use this dataset for:
+
+* meal plan generation
+* meal logging nutrient calculation
+* suggestion engine
+
+---
+
+# Required Core Logic Files
+
+Create clean reusable modules:
+
+### `lib/recovery-engine.ts`
+
+* analyze symptoms + labs + profile
+* assign nutrient priorities
+* generate reasons and focus areas
+
+### `lib/nutrient-targets.ts`
+
+* define default daily nutrient recovery targets
+
+### `lib/meal-planner.ts`
+
+* generate 30–40 day meal plan from food dataset + nutrient needs
+
+### `lib/nutrition-calculator.ts`
+
+* total nutrients from logged meals
+* compare with targets
+* return deficits / adherence
+
+### `lib/suggestion-engine.ts`
+
+* generate next-day food additions / swaps based on missed nutrients
+
+### `lib/lab-insights.ts`
+
+* compare baseline vs follow-up labs and generate progress insights
+
+---
+
+# Pages to Build
+
+Build a polished dashboard-style app with these pages:
+
+1. **Landing page**
+2. **Assessment / Intake page**
+3. **Recovery plan page**
+4. **Daily tracking page**
+5. **Suggestions page**
+6. **Progress dashboard**
+7. **Lab comparison page** (optional)
+
+---
+
+# UI Expectations
+
+Make it hackathon-demo polished:
+
+* modern dashboard layout
+* cards, badges, charts, progress bars
+* nutrient priority tags
+* meal plan tables / expandable day cards
+* clear nutrient deficit indicators
+* responsive forms
+* seeded demo data so judges can try it instantly
+
+---
+
+# What I Want You to Generate
+
+Generate the project in this exact order:
+
+## Step 1 — Architecture
+
+* full folder structure
+* module responsibilities
+* data flow overview
+* app flow overview
+
+## Step 2 — Prisma
+
+* full `schema.prisma`
+
+## Step 3 — Seed Data
+
+* nutrient food dataset
+* sample users
+* sample intake data
+* sample meal logs
+* sample plan entries
+
+## Step 4 — Core Logic Code
+
+Write complete code for:
+
+* `lib/recovery-engine.ts`
+* `lib/nutrient-targets.ts`
+* `lib/meal-planner.ts`
+* `lib/nutrition-calculator.ts`
+* `lib/suggestion-engine.ts`
+* `lib/lab-insights.ts`
+
+## Step 5 — Backend
+
+Create API routes / server actions for:
+
+* intake submission
+* plan generation
+* meal logging
+* daily summary
+* suggestion generation
+* lab comparison
+
+## Step 6 — Frontend
+
+Build all main pages, components, charts, nutrient cards, meal log forms, plan viewer, and dashboard widgets.
+
+## Step 7 — Demo Flow
+
+Create one realistic demo user with:
+
+* symptoms
+* labs
+* nutrient priorities
+* 7 sample days from the 30–40 day plan
+* meal tracking example
+* suggestions example
+* dashboard example
+
+## Step 8 — Setup
+
+Provide:
+
+* local setup steps
+* env variables
+* Prisma migration commands
+* seed command
+* how to run the app
+
+---
+
+# Coding Rules
+
+* Use **TypeScript everywhere**
+* Keep business logic separate from UI
+* Write **real runnable code**, not vague pseudocode
+* Use strong types for nutrient objects, meal plans, summaries, and targets
+* Keep code modular and clean
+* Prefer deterministic logic first; optional AI explanation layer can be added on top
+* Include sensible mock/demo data for the hackathon
+
+---
+
+# Final Instruction
+
+Start building **NutriRecover** now in the exact order above.
+
+Begin with:
+
+1. full folder structure
+2. architecture explanation
+3. `schema.prisma`
+4. seed food dataset structure
+
+Then continue step by step with actual implementation.

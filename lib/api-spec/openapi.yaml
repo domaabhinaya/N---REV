@@ -1,0 +1,1143 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: profiles
+    description: User intake profiles and symptom assessments
+  - name: recovery
+    description: Nutrient recovery priorities and recovery plans
+  - name: meals
+    description: Food catalog and daily meal logging
+  - name: dashboard
+    description: Progress dashboard and suggestions
+  - name: labs
+    description: Baseline vs follow-up lab comparisons
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /profiles:
+    get:
+      operationId: listProfiles
+      tags: [profiles]
+      summary: List all intake profiles
+      responses:
+        "200":
+          description: List of profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Profile"
+    post:
+      operationId: createProfile
+      tags: [profiles]
+      summary: Submit a new intake/assessment profile. Generates recovery priorities, targets, and a recovery plan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "201":
+          description: Created profile with recovery priorities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /profiles/{profileId}:
+    get:
+      operationId: getProfile
+      tags: [profiles]
+      summary: Get a single profile with recovery priorities
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: Not found
+    put:
+      operationId: updateProfile
+      tags: [profiles]
+      summary: Update an existing intake/assessment profile (preserves fields not provided)
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200":
+          description: Updated profile with recovery priorities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: Not found
+
+  /profiles/{profileId}/recovery-plan:
+    get:
+      operationId: getRecoveryPlan
+      tags: [recovery]
+      summary: Get the generated recovery plan for a profile
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      responses:
+        "200":
+          description: Recovery plan with days
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecoveryPlan"
+        "404":
+          description: Not found
+
+  /profiles/{profileId}/targets:
+    get:
+      operationId: getNutrientTargets
+      tags: [recovery]
+      summary: Get daily nutrient recovery targets and priorities for a profile
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      responses:
+        "200":
+          description: Nutrient targets with priorities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NutrientPriority"
+
+  /foods:
+    get:
+      operationId: listFoods
+      tags: [meals]
+      summary: List the food nutrient dataset (optionally filtered by diet type)
+      parameters:
+        - name: dietType
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DietType"
+        - name: tier
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Tier"
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: Paginated food list
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                  - total
+                  - limit
+                  - offset
+                  - hasMore
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Food"
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+                  hasMore:
+                    type: boolean
+
+  /profiles/{profileId}/meal-logs:
+    get:
+      operationId: listMealLogs
+      tags: [meals]
+      summary: List meal logs for a profile, optionally filtered by date
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+        - name: date
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DateFilter"
+      responses:
+        "200":
+          description: Meal logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MealLog"
+    post:
+      operationId: createMealLog
+      tags: [meals]
+      summary: Log a food item eaten for a meal
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MealLogInput"
+      responses:
+        "201":
+          description: Created meal log
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MealLog"
+
+  /meal-logs/{mealLogId}:
+    delete:
+      operationId: deleteMealLog
+      tags: [meals]
+      summary: Remove a logged meal item
+      parameters:
+        - name: mealLogId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /profiles/{profileId}/daily-summary:
+    get:
+      operationId: getDailySummary
+      tags: [dashboard]
+      summary: Get daily nutrient totals vs targets for a given date (defaults to today)
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+        - name: date
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DateFilter"
+      responses:
+        "200":
+          description: Daily nutrition summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailySummary"
+
+  /profiles/{profileId}/suggestions:
+    get:
+      operationId: getSuggestions
+      tags: [dashboard]
+      summary: Get next-day food suggestions for nutrients missed on a given date (defaults to today)
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+        - name: date
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DateFilter"
+      responses:
+        "200":
+          description: Suggestions per missed nutrient
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Suggestion"
+
+  /profiles/{profileId}/dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get progress dashboard - streak, adherence score, weekly nutrient history, insights
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+
+  /profiles/{profileId}/lab-comparisons:
+    get:
+      operationId: listLabComparisons
+      tags: [labs]
+      summary: List baseline/follow-up lab comparisons for a profile
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      responses:
+        "200":
+          description: Lab comparisons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LabComparison"
+    post:
+      operationId: createLabComparison
+      tags: [labs]
+      summary: Submit baseline and/or follow-up lab values and get progress insights
+      parameters:
+        - $ref: "#/components/parameters/ProfileIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LabComparisonInput"
+      responses:
+        "201":
+          description: Created lab comparison with insights
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabComparison"
+
+components:
+  parameters:
+    ProfileIdParam:
+      name: profileId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    DateFilter:
+      type: string
+      format: date
+
+    DietType:
+      type: string
+      enum: [vegetarian, eggetarian, non_vegetarian, vegan]
+
+    Tier:
+      type: string
+      enum: [primary, extended]
+
+    SymptomKey:
+      type: string
+      enum:
+        - fatigue
+        - weakness
+        - hair_fall
+        - pale_skin
+        - dizziness
+        - muscle_cramps
+        - bone_pain
+        - poor_immunity
+        - tingling_numbness
+        - brain_fog
+        - poor_appetite
+        - brittle_nails
+        - slow_recovery
+        - low_energy
+        - weight_loss
+        - weight_gain
+        - fever
+        - night_sweats
+        - poor_sleep
+        - mood_changes
+        - shortness_of_breath
+        - cold_hands_feet
+        - rapid_heartbeat
+        - easy_bruising
+        - poor_concentration
+        - memory_problems
+        - frequent_headache
+        - tingling_hands
+        - tingling_feet
+        - muscle_weakness
+        - joint_pain
+        - difficulty_walking
+        - dry_skin
+        - mouth_ulcers
+        - slow_wound_healing
+        - constipation
+        - diarrhea
+        - bloating
+        - nausea
+        - vomiting
+
+    NutrientKey:
+      type: string
+      enum: [protein, iron, calcium, vitamin_d, magnesium, vitamin_a, vitamin_c, vitamin_b7, vitamin_e, vitamin_k, vitamin_b1, vitamin_b2, vitamin_b3, vitamin_b6, vitamin_b12]
+
+    PriorityLevel:
+      type: string
+      enum: [high, medium, low]
+
+    NutrientStatus:
+      type: string
+      enum: [on_target, needs_improvement, no_data]
+
+    ProfileInput:
+      type: object
+      required: [name, age, gender, heightCm, weightKg, dietType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        age:
+          type: integer
+          minimum: 1
+        gender:
+          type: string
+        heightCm:
+          type: number
+        weightKg:
+          type: number
+        dietType:
+          $ref: "#/components/schemas/DietType"
+        allergies:
+          type: string
+        cuisinePreference:
+          type: string
+        budget:
+          type: string
+        symptoms:
+          type: array
+          items:
+            $ref: "#/components/schemas/SymptomKey"
+        hemoglobin:
+          type: ["number", "null"]
+        ferritin:
+          type: ["number", "null"]
+        vitaminB12Level:
+          type: ["number", "null"]
+        vitaminDLevel:
+          type: ["number", "null"]
+        serumCalcium:
+          type: ["number", "null"]
+        totalProtein:
+          type: ["number", "null"]
+        rbcCount:
+          type: ["number", "null"]
+        wbcCount:
+          type: ["number", "null"]
+        plateletCount:
+          type: ["number", "null"]
+        hematocrit:
+          type: ["number", "null"]
+        mcv:
+          type: ["number", "null"]
+        serumIron:
+          type: ["number", "null"]
+        vitaminA:
+          type: ["number", "null"]
+        vitaminC:
+          type: ["number", "null"]
+        vitaminE:
+          type: ["number", "null"]
+        magnesium:
+          type: ["number", "null"]
+        phosphorus:
+          type: ["number", "null"]
+        sodium:
+          type: ["number", "null"]
+        fastingBloodSugar:
+          type: ["number", "null"]
+        hba1c:
+          type: ["number", "null"]
+        creatinine:
+          type: ["number", "null"]
+        bun:
+          type: ["number", "null"]
+        totalCholesterol:
+          type: ["number", "null"]
+        hdl:
+          type: ["number", "null"]
+        ldl:
+          type: ["number", "null"]
+        triglycerides:
+          type: ["number", "null"]
+        tsh:
+          type: ["number", "null"]
+        alt:
+          type: ["number", "null"]
+        ast:
+          type: ["number", "null"]
+        recoveryDuration:
+          type: integer
+          default: 30
+        foodHabits:
+          type: object
+          nullable: true
+
+    Profile:
+      type: object
+      required: [id, name, age, gender, heightCm, weightKg, dietType, symptoms, createdAt, priorities]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        heightCm:
+          type: number
+        weightKg:
+          type: number
+        dietType:
+          $ref: "#/components/schemas/DietType"
+        allergies:
+          type: ["string", "null"]
+        cuisinePreference:
+          type: ["string", "null"]
+        budget:
+          type: ["string", "null"]
+        symptoms:
+          type: array
+          items:
+            $ref: "#/components/schemas/SymptomKey"
+        hemoglobin:
+          type: ["number", "null"]
+        ferritin:
+          type: ["number", "null"]
+        vitaminB12Level:
+          type: ["number", "null"]
+        vitaminDLevel:
+          type: ["number", "null"]
+        serumCalcium:
+          type: ["number", "null"]
+        totalProtein:
+          type: ["number", "null"]
+        rbcCount:
+          type: ["number", "null"]
+        wbcCount:
+          type: ["number", "null"]
+        plateletCount:
+          type: ["number", "null"]
+        hematocrit:
+          type: ["number", "null"]
+        mcv:
+          type: ["number", "null"]
+        serumIron:
+          type: ["number", "null"]
+        vitaminA:
+          type: ["number", "null"]
+        vitaminC:
+          type: ["number", "null"]
+        vitaminE:
+          type: ["number", "null"]
+        magnesium:
+          type: ["number", "null"]
+        phosphorus:
+          type: ["number", "null"]
+        sodium:
+          type: ["number", "null"]
+        fastingBloodSugar:
+          type: ["number", "null"]
+        hba1c:
+          type: ["number", "null"]
+        creatinine:
+          type: ["number", "null"]
+        bun:
+          type: ["number", "null"]
+        totalCholesterol:
+          type: ["number", "null"]
+        hdl:
+          type: ["number", "null"]
+        ldl:
+          type: ["number", "null"]
+        triglycerides:
+          type: ["number", "null"]
+        tsh:
+          type: ["number", "null"]
+        alt:
+          type: ["number", "null"]
+        ast:
+          type: ["number", "null"]
+        recoveryDuration:
+          type: integer
+        foodHabits:
+          type: object
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        priorities:
+          type: array
+          items:
+            $ref: "#/components/schemas/NutrientPriority"
+
+    NutrientPriority:
+      type: object
+      required: [nutrient, score, priority, dailyTarget, unit, reasons, foodSources]
+      properties:
+        nutrient:
+          $ref: "#/components/schemas/NutrientKey"
+        score:
+          type: number
+        priority:
+          $ref: "#/components/schemas/PriorityLevel"
+        dailyTarget:
+          type: number
+        unit:
+          type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        foodSources:
+          type: array
+          items:
+            type: string
+
+    Food:
+      type: object
+      required: [id, name, servingSize, protein, iron, calcium, vitaminD, dietTags, mealTags, cuisineTags]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        servingSize:
+          type: string
+        protein:
+          type: number
+        iron:
+          type: number
+        calcium:
+          type: number
+        vitaminD:
+          type: number
+        magnesium:
+          type: number
+          nullable: true
+        vitaminA:
+          type: number
+          nullable: true
+        vitaminC:
+          type: number
+          nullable: true
+        vitaminB7:
+          type: number
+          nullable: true
+        vitaminE:
+          type: number
+          nullable: true
+        vitaminK:
+          type: number
+          nullable: true
+        vitaminB12:
+          type: number
+          nullable: true
+        vitaminB1:
+          type: number
+          nullable: true
+        vitaminB2:
+          type: number
+          nullable: true
+        vitaminB3:
+          type: number
+          nullable: true
+        vitaminB6:
+          type: number
+          nullable: true
+        dietTags:
+          type: array
+          items:
+            $ref: "#/components/schemas/DietType"
+        mealTags:
+          type: array
+          items:
+            type: string
+        cuisineTags:
+          type: array
+          items:
+            type: string
+
+    RecoveryPlanDay:
+      type: object
+      required: [dayNumber, breakfast, lunch, dinner, snacks, totals, status]
+      properties:
+        dayNumber:
+          type: integer
+        breakfast:
+          type: array
+          items:
+            type: string
+        lunch:
+          type: array
+          items:
+            type: string
+        dinner:
+          type: array
+          items:
+            type: string
+        snacks:
+          type: array
+          items:
+            type: string
+        totals:
+          $ref: "#/components/schemas/NutrientTotals"
+        status:
+          type: object
+          properties:
+            protein:
+              $ref: "#/components/schemas/NutrientStatus"
+            iron:
+              $ref: "#/components/schemas/NutrientStatus"
+            calcium:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminD:
+              $ref: "#/components/schemas/NutrientStatus"
+            magnesium:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminA:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminC:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminB7:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminE:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminK:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminB12:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminB1:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminB2:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminB3:
+              $ref: "#/components/schemas/NutrientStatus"
+            vitaminB6:
+              $ref: "#/components/schemas/NutrientStatus"
+
+    RecoveryPlan:
+      type: object
+      required: [profileId, durationDays, days, planExplanation]
+      properties:
+        profileId:
+          type: integer
+        durationDays:
+          type: integer
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecoveryPlanDay"
+        planExplanation:
+          type: array
+          items:
+            type: string
+
+    NutrientTotals:
+      type: object
+      required: [protein, iron, calcium, vitaminD, magnesium, vitaminA, vitaminC, vitaminB7, vitaminE, vitaminK, vitaminB1, vitaminB2, vitaminB3, vitaminB6, vitaminB12]
+      properties:
+        protein:
+          type: number
+        iron:
+          type: number
+        calcium:
+          type: number
+        vitaminD:
+          type: number
+        magnesium:
+          type: number
+        vitaminA:
+          type: number
+        vitaminC:
+          type: number
+        vitaminB7:
+          type: number
+        vitaminE:
+          type: number
+        vitaminK:
+          type: number
+        vitaminB12:
+          type: number
+        vitaminB1:
+          type: number
+        vitaminB2:
+          type: number
+        vitaminB3:
+          type: number
+        vitaminB6:
+          type: number
+
+    MealLogInput:
+      type: object
+      required: [date, mealType, servings]
+      properties:
+        date:
+          type: string
+          format: date
+        mealType:
+          type: string
+          enum: [breakfast, lunch, dinner, snack]
+        foodId:
+          type: integer
+          nullable: true
+          description: Dataset food id. Provide this OR customFoodName for a manual item.
+        customFoodName:
+          type: string
+          description: Manual custom food name entered by the user (no dataset entry).
+        customLabel:
+          type: string
+          description: Optional label/serving description for a manual custom food.
+        servings:
+          type: number
+
+    MealLog:
+      type: object
+      required: [id, profileId, date, mealType, foodName, servings, protein, iron, calcium, vitaminD]
+      properties:
+        id:
+          type: integer
+        profileId:
+          type: integer
+        date:
+          type: string
+          format: date
+        mealType:
+          type: string
+          enum: [breakfast, lunch, dinner, snack]
+        foodId:
+          type: integer
+          nullable: true
+        customFoodName:
+          type: string
+          nullable: true
+        customLabel:
+          type: string
+          nullable: true
+        foodName:
+          type: string
+        servings:
+          type: number
+        protein:
+          type: number
+        iron:
+          type: number
+        calcium:
+          type: number
+        vitaminD:
+          type: number
+
+    NutrientLine:
+      type: object
+      required: [nutrient, unit, consumed, target, status]
+      properties:
+        nutrient:
+          $ref: "#/components/schemas/NutrientKey"
+        unit:
+          type: string
+        consumed:
+          type: number
+        target:
+          type: number
+        status:
+          $ref: "#/components/schemas/NutrientStatus"
+
+    DailySummary:
+      type: object
+      required: [date, nutrients, mealLogs]
+      properties:
+        date:
+          type: string
+          format: date
+        nutrients:
+          type: array
+          items:
+            $ref: "#/components/schemas/NutrientLine"
+        mealLogs:
+          type: array
+          items:
+            $ref: "#/components/schemas/MealLog"
+
+    Suggestion:
+      type: object
+      required: [nutrient, reason, additions, expectedImprovement]
+      properties:
+        nutrient:
+          $ref: "#/components/schemas/NutrientKey"
+        reason:
+          type: string
+        additions:
+          type: array
+          items:
+            type: string
+        expectedImprovement:
+          type: string
+
+    WeeklyNutrientPoint:
+      type: object
+      required: [date, protein, iron, calcium, vitaminD, magnesium, vitaminA, vitaminC, vitaminB7, vitaminE, vitaminK, vitaminB1, vitaminB2, vitaminB3, vitaminB6, vitaminB12]
+      properties:
+        date:
+          type: string
+          format: date
+        protein:
+          type: number
+        iron:
+          type: number
+        calcium:
+          type: number
+        vitaminD:
+          type: number
+        magnesium:
+          type: number
+        vitaminA:
+          type: number
+        vitaminC:
+          type: number
+        vitaminB7:
+          type: number
+        vitaminE:
+          type: number
+        vitaminK:
+          type: number
+        vitaminB12:
+          type: number
+        vitaminB1:
+          type: number
+        vitaminB2:
+          type: number
+        vitaminB3:
+          type: number
+        vitaminB6:
+          type: number
+
+    Dashboard:
+      type: object
+      required: [activeNutrients, daysTracked, streak, weeklyAdherenceScore, weeklyHistory, insights, recoveryScore]
+      properties:
+        activeNutrients:
+          type: array
+          items:
+            $ref: "#/components/schemas/NutrientPriority"
+        daysTracked:
+          type: integer
+        recoveryScore:
+          type: number
+        streak:
+          type: integer
+        weeklyAdherenceScore:
+          type: number
+        weeklyHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/WeeklyNutrientPoint"
+        insights:
+          type: array
+          items:
+            type: string
+
+    LabComparisonInput:
+      type: object
+      required: [labType]
+      properties:
+        labType:
+          type: string
+          enum: [baseline, followup]
+        hemoglobin:
+          type: ["number", "null"]
+        ferritin:
+          type: ["number", "null"]
+        vitaminB12Level:
+          type: ["number", "null"]
+        vitaminDLevel:
+          type: ["number", "null"]
+        serumCalcium:
+          type: ["number", "null"]
+        totalProtein:
+          type: ["number", "null"]
+        rbcCount:
+          type: ["number", "null"]
+        wbcCount:
+          type: ["number", "null"]
+        plateletCount:
+          type: ["number", "null"]
+        hematocrit:
+          type: ["number", "null"]
+        mcv:
+          type: ["number", "null"]
+        serumIron:
+          type: ["number", "null"]
+        vitaminA:
+          type: ["number", "null"]
+        vitaminC:
+          type: ["number", "null"]
+        vitaminE:
+          type: ["number", "null"]
+        magnesium:
+          type: ["number", "null"]
+        phosphorus:
+          type: ["number", "null"]
+        sodium:
+          type: ["number", "null"]
+        fastingBloodSugar:
+          type: ["number", "null"]
+        hba1c:
+          type: ["number", "null"]
+        creatinine:
+          type: ["number", "null"]
+        bun:
+          type: ["number", "null"]
+        totalCholesterol:
+          type: ["number", "null"]
+        hdl:
+          type: ["number", "null"]
+        ldl:
+          type: ["number", "null"]
+        triglycerides:
+          type: ["number", "null"]
+        tsh:
+          type: ["number", "null"]
+        alt:
+          type: ["number", "null"]
+        ast:
+          type: ["number", "null"]
+        recordedAt:
+          type: string
+          format: date
+
+    LabComparison:
+      type: object
+      required: [id, profileId, labType, recordedAt]
+      properties:
+        id:
+          type: integer
+        profileId:
+          type: integer
+        labType:
+          type: string
+          enum: [baseline, followup]
+        hemoglobin:
+          type: ["number", "null"]
+        ferritin:
+          type: ["number", "null"]
+        vitaminB12Level:
+          type: ["number", "null"]
+        vitaminDLevel:
+          type: ["number", "null"]
+        serumCalcium:
+          type: ["number", "null"]
+        totalProtein:
+          type: ["number", "null"]
+        rbcCount:
+          type: ["number", "null"]
+        wbcCount:
+          type: ["number", "null"]
+        plateletCount:
+          type: ["number", "null"]
+        hematocrit:
+          type: ["number", "null"]
+        mcv:
+          type: ["number", "null"]
+        serumIron:
+          type: ["number", "null"]
+        vitaminA:
+          type: ["number", "null"]
+        vitaminC:
+          type: ["number", "null"]
+        vitaminE:
+          type: ["number", "null"]
+        magnesium:
+          type: ["number", "null"]
+        phosphorus:
+          type: ["number", "null"]
+        sodium:
+          type: ["number", "null"]
+        fastingBloodSugar:
+          type: ["number", "null"]
+        hba1c:
+          type: ["number", "null"]
+        creatinine:
+          type: ["number", "null"]
+        bun:
+          type: ["number", "null"]
+        totalCholesterol:
+          type: ["number", "null"]
+        hdl:
+          type: ["number", "null"]
+        ldl:
+          type: ["number", "null"]
+        triglycerides:
+          type: ["number", "null"]
+        tsh:
+          type: ["number", "null"]
+        alt:
+          type: ["number", "null"]
+        ast:
+          type: ["number", "null"]
+        recordedAt:
+          type: string
+          format: date
+        insights:
+          type: array
+          items:
+            type: string
+
+

@@ -1,0 +1,54 @@
+$ pnpm run typecheck && pnpm -r --if-present run build
+$ pnpm run typecheck:libs && pnpm -r --filter "./artifacts/**" --filter "./scripts" --if-present run typecheck
+$ tsc --build
+Scope: 4 of 9 workspace projects
+artifacts/api-server typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/mockup-sandbox typecheck$ tsc -p tsconfig.json --noEmit
+scripts typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/nutrirecover typecheck$ tsc -p tsconfig.json --noEmit
+scripts typecheck: Done
+artifacts/api-server typecheck: Done
+artifacts/nutrirecover typecheck: Done
+artifacts/mockup-sandbox typecheck: Done
+Scope: 8 of 9 workspace projects
+artifacts/mockup-sandbox build$ vite build
+artifacts/mockup-sandbox build: [36mvite v7.3.5 [32mbuilding client environment for production...[36m[39m
+artifacts/mockup-sandbox build: transforming...
+artifacts/mockup-sandbox build: [32m✓[39m 30 modules transformed.
+artifacts/mockup-sandbox build: rendering chunks...
+artifacts/mockup-sandbox build: computing gzip size...
+artifacts/mockup-sandbox build: [2mdist/[22m[32mindex.html                 [39m[1m[2m  4.42 kB[22m[1m[22m[2m │ gzip:  1.23 kB[22m
+artifacts/mockup-sandbox build: [2mdist/[22m[35massets/index-D3zZPnxY.css  [39m[1m[2m 88.21 kB[22m[1m[22m[2m │ gzip: 14.76 kB[22m
+artifacts/mockup-sandbox build: [2mdist/[22m[36massets/index-D4Ieq8L0.js   [39m[1m[2m187.72 kB[22m[1m[22m[2m │ gzip: 59.51 kB[22m
+artifacts/mockup-sandbox build: [32m✓ built in 5.12s[39m
+artifacts/mockup-sandbox build: Done
+artifacts/api-server build$ node ./build.mjs
+artifacts/nutrirecover build$ vite build --config vite.config.ts
+artifacts/nutrirecover build: [36mvite v7.3.5 [32mbuilding client environment for production...[36m[39m
+artifacts/nutrirecover build: transforming...
+artifacts/nutrirecover build: [33msrc/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.[39m
+artifacts/nutrirecover build: [33msrc/components/ui/label.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.[39m
+artifacts/api-server build:   dist\index.mjs                   4.1mb
+artifacts/api-server build:   dist\pino-worker.mjs           153.5kb
+artifacts/api-server build:   dist\pino-file.mjs             142.1kb
+artifacts/api-server build:   dist\pino-pretty.mjs           114.6kb
+artifacts/api-server build:   dist\thread-stream-worker.mjs    7.3kb
+artifacts/api-server build:   ...and 5 more output files...
+artifacts/api-server build: Done in 16244ms
+artifacts/api-server build: Done
+artifacts/nutrirecover build: [33msrc/components/ui/select.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.[39m
+artifacts/nutrirecover build: [33msrc/components/ui/progress.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.[39m
+artifacts/nutrirecover build: [32m✓[39m 2868 modules transformed.
+artifacts/nutrirecover build: rendering chunks...
+artifacts/nutrirecover build: computing gzip size...
+artifacts/nutrirecover build: [2mdist/public/[22m[32mindex.html                   [39m[1m[2m    1.48 kB[22m[1m[22m[2m │ gzip:   0.58 kB[22m
+artifacts/nutrirecover build: [2mdist/public/[22m[35massets/index-CTA15DF6.css    [39m[1m[2m  113.79 kB[22m[1m[22m[2m │ gzip:  18.70 kB[22m
+artifacts/nutrirecover build: [33m
+artifacts/nutrirecover build: (!) Some chunks are larger than 500 kB after minification. Consider:
+artifacts/nutrirecover build: - Using dynamic import() to code-split the application
+artifacts/nutrirecover build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+artifacts/nutrirecover build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+artifacts/nutrirecover build: [2mdist/public/[22m[36massets/html2pdf-C7v_Rb0-.js  [39m[1m[33m  975.75 kB[39m[22m[2m │ gzip: 281.17 kB[22m
+artifacts/nutrirecover build: [2mdist/public/[22m[36massets/index-CH2diiuF.js     [39m[1m[33m1,208.54 kB[39m[22m[2m │ gzip: 343.78 kB[22m
+artifacts/nutrirecover build: [32m✓ built in 1m 56s[39m
+artifacts/nutrirecover build: Done

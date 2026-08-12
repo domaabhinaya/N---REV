@@ -1,0 +1,144 @@
+(node:3356) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:65:32)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async loadFoods (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:12:10)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:172:17)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async loadDayLogs (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:30:17)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:49:21)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:65:32)
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:166:17)
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:59:17)
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:101:17)
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:133:21)
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:42:21)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:65:32)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async loadFoods (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:12:10)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:172:17)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async loadDayLogs (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:30:17)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:49:21)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:107:32)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:107:32)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\dashboard.ts:139:17)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\recovery.ts:107:32)
+Error: Failed query: select "id", "name", "serving_size", "protein", "iron", "calcium", "vitamin_d", "magnesium", "vitamin_a", "vitamin_c", "vitamin_b7", "vitamin_e", "vitamin_k", "vitamin_b12", "vitamin_b1", "vitamin_b2", "vitamin_b3", "vitamin_b6", "diet_tags", "meal_tags", "cuisine_tags", "tier", "source" from "foods"
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0\node_modules\src\node-postgres\session.ts:154:19)
+    at async getAllFoodsForRecommendations (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\lib\food-lookup.ts:47:15)
+    at async loadFoods (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:12:10)
+    at async <anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\artifacts\api-server\src\routes\profiles.ts:172:17)
+node:internal/buffer:92
+  throw new ERR_OUT_OF_RANGE(type || 'offset',
+  ^
+
+RangeError [ERR_OUT_OF_RANGE]: The value of "offset" is out of range. It must be >= 0 and <= 340. Received 10757
+    at boundsError (node:internal/buffer:92:9)
+    at readInt32BE (node:internal/buffer:488:5)
+    at Buffer.readInt32BE (node:internal/buffer:1025:49)
+    at BufferReader.int32 (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\pg-protocol@1.15.0\node_modules\pg-protocol\src\buffer-reader.ts:27:32)
+    at parseDataRowMessage (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\pg-protocol@1.15.0\node_modules\pg-protocol\src\parser.ts:312:24)
+    at Parser.handlePacket (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\pg-protocol@1.15.0\node_modules\pg-protocol\src\parser.ts:191:19)
+    at Parser.parse (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\pg-protocol@1.15.0\node_modules\pg-protocol\src\parser.ts:105:30)
+    at TLSSocket.<anonymous> (C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\pg-protocol@1.15.0\node_modules\pg-protocol\src\index.ts:7:48)
+    at TLSSocket.emit (node:events:509:28)
+    at addChunk (node:internal/streams/readable:563:12) {
+  code: 'ERR_OUT_OF_RANGE'
+}
+
+Node.js v24.18.0

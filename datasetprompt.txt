@@ -1,0 +1,67 @@
+Here is the cleaned N-REV food dataset to integrate into the existing food and nutrient architecture.
+
+Use only the **final cleaned dataset sheet** as the **production nutrition table** for the app. Do not use raw, source, or intermediate sheets as the main nutrition source in production except where needed only for debugging, validation, or traceability.
+
+# Production nutrition dataset rules
+
+* Preserve the nutrient units, column meanings, food naming, serving basis, and value definitions exactly as defined in the cleaned dataset.
+* Do not reconvert, re-normalize, rescale, or reinterpret nutrient values unless a clearly documented transformation step is intentionally implemented in code.
+* Use the cleaned N-REV dataset as the primary nutrition source for:
+
+  * food lookup
+  * food alias matching / search mapping
+  * baseline food habits analysis
+  * meal logging
+  * nutrient calculation
+  * meal plan nutrient estimation
+  * nutrient target comparison
+  * adaptive next-day suggestions
+  * dashboard summaries
+  * recovery progress insights
+
+# Nutrient scope alignment rule
+
+Use only the nutrients that actually exist in the final cleaned N-REV dataset as the live production nutrition pipeline.
+
+* Do not add, infer, enrich, estimate, synthesize, or backfill unsupported nutrients into the production dataset.
+* Do not create separate enrichment layers for nutrients that are not present in the cleaned dataset.
+* If a nutrient is not present in the production dataset, it must not be treated as part of the live nutrition calculation pipeline.
+* If the previous codebase contains logic, UI references, dashboard cards, target comparisons, adaptive suggestions, recovery insights, or meal-plan calculations for a nutrient that is not present in the real cleaned dataset, remove or disable those references so the app stays aligned with the actual data.
+
+# Important implementation decision for this integration
+
+Vitamin B12 should not be added, enriched, estimated, or separately maintained if it is not present in the final cleaned dataset.
+
+That means:
+
+* do not create a `vitamin_b12_mcg` enrichment column
+* do not merge B12 values into food rows
+* do not calculate B12 totals
+* do not calculate B12 recovery percentage
+* do not include B12 in meal logging totals
+* do not include B12 in nutrient target comparison
+* do not include B12 in dashboard summaries
+* do not include B12 in adaptive suggestions
+* do not include B12 in recovery progress insights
+* do not keep B12-related frontend cards, labels, summaries, or reports if the production dataset does not support them
+
+# After integrating the cleaned dataset, wire it into:
+
+* baseline food habits analysis
+* personalized recovery meal planning
+* daily meal logging
+* nutrient target comparison
+* adaptive next-day suggestions
+* dashboard summaries
+* recovery progress insights
+
+# At the end, clearly report:
+
+1. which sheet was used as the production nutrition table
+2. whether any nutrient fields were intentionally excluded from the live app because they are not present in the production dataset
+3. how nutrient units and serving basis were preserved in the calculation pipeline
+4. which app modules are now fully connected to the real cleaned dataset
+
+# Final implementation principle
+
+The app should reflect the real cleaned dataset exactly as available, without inventing unsupported nutrient values or mixing external nutrient estimates into the production table. The goal is a stable, traceable, production-safe nutrition system where meal planning, logging, dashboards, and recovery insights are all driven by the actual cleaned N-REV dataset.

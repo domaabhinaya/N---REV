@@ -1,0 +1,52 @@
+﻿
+==============================================
+FILE: NREV_Refined_Dataset.xlsx
+SHEETS: Final Cleaned
+ROWS: 40000
+COLUMN COUNT: 49
+COLUMNS: food_code, food_name, food_category, source, serving_description, serving_grams, energy_kcal, carb_g, protein_g, fat_g, fibre_g, sugar_g, sfa_mg, mufa_mg, pufa_mg, cholesterol_mg, trans_fat_g, calcium_mg, phosphorus_mg, magnesium_mg, sodium_mg, potassium_mg, iron_mg, copper_mg, selenium_ug, chromium_mg, manganese_mg, molybdenum_mg, zinc_mg, iodine_ug, vitamin_a_ug, vitamin_b1_mg, vitamin_b2_mg, vitamin_b3_mg, vitamin_b5_mg, vitamin_b6_mg, vitamin_b7_ug, vitamin_b9_ug, vitamin_b12_ug, folate_ug, vitamin_c_mg, vitamin_d2_ug, vitamin_d3_ug, vitamin_d_ug, vitamin_e_mg, vitamin_k1_ug, vitamin_k2_ug, vitamin_k_ug, carotenoids_ug
+
+--- Coverage (usable = finite & > 0) ---
+nutrient_col	usable	missing	pct_usable
+vitamin_b12_ug	3794	36206	9.49%
+folate_ug	1544	38456	3.86%
+vitamin_b9_ug	2247	37753	5.62%
+zinc_mg	2640	37360	6.60%
+iodine_ug	241	39759	0.60%
+potassium_mg	3042	36958	7.61%
+protein_g	32593	7407	81.48%
+iron_mg	24981	15019	62.45%
+calcium_mg	24615	15385	61.54%
+magnesium_mg	2304	37696	5.76%
+vitamin_a_ug	2790	37210	6.98%
+vitamin_c_mg	11112	28888	27.78%
+vitamin_b7_ug	1238	38762	3.09%
+vitamin_d_ug	2833	37167	7.08%
+vitamin_e_mg	1411	38589	3.53%
+vitamin_k_ug	1296	38704	3.24%
+
+==============================================
+FILE: NREV_Extended_Dataset.xlsx
+SHEETS: Final Cleaned
+ROWS: 46928
+COLUMN COUNT: 49
+COLUMNS: food_code, food_name, food_category, source, serving_description, serving_grams, energy_kcal, carb_g, protein_g, fat_g, fibre_g, sugar_g, sfa_mg, mufa_mg, pufa_mg, cholesterol_mg, trans_fat_g, calcium_mg, phosphorus_mg, magnesium_mg, sodium_mg, potassium_mg, iron_mg, copper_mg, selenium_ug, chromium_mg, manganese_mg, molybdenum_mg, zinc_mg, iodine_ug, vitamin_a_ug, vitamin_b1_mg, vitamin_b2_mg, vitamin_b3_mg, vitamin_b5_mg, vitamin_b6_mg, vitamin_b7_ug, vitamin_b9_ug, vitamin_b12_ug, folate_ug, vitamin_c_mg, vitamin_d2_ug, vitamin_d3_ug, vitamin_d_ug, vitamin_e_mg, vitamin_k1_ug, vitamin_k2_ug, vitamin_k_ug, carotenoids_ug
+
+--- Coverage (usable = finite & > 0) ---
+nutrient_col	usable	missing	pct_usable
+vitamin_b12_ug	3794	43134	8.08%
+folate_ug	535	46393	1.14%
+vitamin_b9_ug	1570	45358	3.35%
+zinc_mg	1743	45185	3.71%
+iodine_ug	241	46687	0.51%
+potassium_mg	2284	44644	4.87%
+protein_g	44165	2763	94.11%
+iron_mg	3767	43161	8.03%
+calcium_mg	4366	42562	9.30%
+magnesium_mg	1835	45093	3.91%
+vitamin_a_ug	2727	44201	5.81%
+vitamin_c_mg	2347	44581	5.00%
+vitamin_b7_ug	234	46694	0.50%
+vitamin_d_ug	2249	44679	4.79%
+vitamin_e_mg	876	46052	1.87%
+vitamin_k_ug	306	46622	0.65%

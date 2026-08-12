@@ -1,0 +1,87 @@
+(node:17880) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91085:17
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91509:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91547:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:90921:17
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91119:17
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91509:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:90921:17
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91547:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:90921:17
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91509:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91547:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:91578:21
+Error: Failed query: select "id", "name", "age", "gender", "height_cm", "weight_kg", "diet_type", "allergies", "cuisine_preference", "budget", "symptoms", "hemoglobin", "ferritin", "vitamin_b12_level", "vitamin_d_level", "serum_calcium", "total_protein", "recovery_duration", "food_habits", "created_at" from "profiles" where "profiles"."id" = $1
+params: 14
+    at NodePgPreparedQuery.queryWithCache (file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78310:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:78543:23
+    at async file:///C:/Users/Abhinaya%20Doma/OneDrive/Desktop/N-REV-main/artifacts/api-server/dist/index.mjs:90921:17
