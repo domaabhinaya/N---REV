@@ -164,7 +164,9 @@ export function matchesCategory(food: PlannerFood, category: string): boolean {
     // Direct match
     return foodCategory.toLowerCase() === cat;
   }
-  return mapped.some((m) => foodCategory === m);
+  // Compare case-insensitively: the classifier returns capitalized category
+  // labels (e.g. "Vegetables") while categoryMap values are lowercase.
+  return mapped.some((m) => foodCategory.toLowerCase() === m.toLowerCase());
 }
 
 /**

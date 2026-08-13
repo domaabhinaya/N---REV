@@ -4,9 +4,16 @@ import { eq, like } from "drizzle-orm";
 
 const router: IRouter = Router();
 
-const ADMIN_KEY = process.env.ADMIN_SECRET_KEY || "nrev-admin-2024";
+// Admin API is gated by a shared secret supplied via the ADMIN_SECRET_KEY
+// environment variable. There is deliberately NO hard-coded default so the
+// endpoint is disabled unless the operator configures a key.
+const ADMIN_KEY = process.env.ADMIN_SECRET_KEY;
 
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  if (!ADMIN_KEY) {
+    res.status(403).json({ error: "Admin API is not configured (ADMIN_SECRET_KEY not set)." });
+    return;
+  }
   const key = req.headers["x-admin-key"] as string;
   if (!key || key !== ADMIN_KEY) {
     res.status(403).json({ error: "Unauthorized admin access. Provide valid x-admin-key header." });

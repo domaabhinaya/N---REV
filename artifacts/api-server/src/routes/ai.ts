@@ -30,11 +30,49 @@ import {
   type NutrientKey,
 } from "../lib/recovery-engine";
 import { convertVitaminDUgToIU } from "../lib/nutrition-calculator";
+import {
+  classifyCuisine,
+  matchesCategory,
+} from "../lib/food-classifier";
 
 // Lab value display metadata. Values come from the profile row and the
 // historical lab_comparisons records; these constants supply the standard
 // lab units so the assistant speaks the same language as the frontend
-// Assessment/Report pages.
+// Assessment/Report pages. Every numeric lab field stored on the profile is
+// surfaced here (dynamic schema), so the assistant never fabricates a value
+// and always reports unavailable fields as missing.
+const LAB_LABELS: Record<string, string> = {
+  hemoglobin: "Hemoglobin",
+  ferritin: "Ferritin",
+  vitaminB12Level: "Vitamin B12",
+  vitaminDLevel: "Vitamin D",
+  serumCalcium: "Serum Calcium",
+  totalProtein: "Total Protein",
+  rbcCount: "RBC Count",
+  wbcCount: "WBC Count",
+  plateletCount: "Platelets",
+  hematocrit: "Hematocrit",
+  mcv: "MCV",
+  serumIron: "Serum Iron",
+  vitaminA: "Vitamin A (lab)",
+  vitaminC: "Vitamin C (lab)",
+  vitaminE: "Vitamin E (lab)",
+  magnesium: "Magnesium (lab)",
+  phosphorus: "Phosphorus",
+  sodium: "Sodium",
+  fastingBloodSugar: "Fasting Blood Sugar",
+  hba1c: "HbA1c",
+  creatinine: "Creatinine",
+  bun: "BUN",
+  totalCholesterol: "Total Cholesterol",
+  hdl: "HDL",
+  ldl: "LDL",
+  triglycerides: "Triglycerides",
+  tsh: "TSH",
+  alt: "ALT",
+  ast: "AST",
+};
+
 const LAB_INFO: Record<string, { unit: string }> = {
   hemoglobin: { unit: "g/dL" },
   ferritin: { unit: "ng/mL" },
@@ -42,7 +80,32 @@ const LAB_INFO: Record<string, { unit: string }> = {
   vitaminDLevel: { unit: "ng/mL" },
   serumCalcium: { unit: "mg/dL" },
   totalProtein: { unit: "g/dL" },
+  rbcCount: { unit: "million/\u00B5L" },
+  wbcCount: { unit: "\u00D710\u00B3/\u00B5L" },
+  plateletCount: { unit: "\u00D710\u00B3/\u00B5L" },
+  hematocrit: { unit: "%" },
+  mcv: { unit: "fL" },
+  serumIron: { unit: "\u00B5g/dL" },
+  vitaminA: { unit: "\u00B5g/dL" },
+  vitaminC: { unit: "mg/dL" },
+  vitaminE: { unit: "mg/L" },
+  magnesium: { unit: "mg/dL" },
+  phosphorus: { unit: "mg/dL" },
+  sodium: { unit: "mEq/L" },
+  fastingBloodSugar: { unit: "mg/dL" },
+  hba1c: { unit: "%" },
+  creatinine: { unit: "mg/dL" },
+  bun: { unit: "mg/dL" },
+  totalCholesterol: { unit: "mg/dL" },
+  hdl: { unit: "mg/dL" },
+  ldl: { unit: "mg/dL" },
+  triglycerides: { unit: "mg/dL" },
+  tsh: { unit: "\u00B5IU/mL" },
+  alt: { unit: "U/L" },
+  ast: { unit: "U/L" },
 };
+
+const LAB_KEYS = Object.keys(LAB_INFO);
 
 const router: IRouter = Router();
 
@@ -140,12 +203,35 @@ const PLAUSIBLE_MAX: Partial<Record<NutrientKey, number>> = {
   vitamin_k: 2000,
 };
 
+// ---------------------------------------------------------------------------
+// Allergy safety helpers.
+// Allergy filtering is mandatory before ANY food is recommended. The profile
+// stores allergies as free text; we conservatively treat each comma/semicolon
+// separated token as an allergen and exclude any dataset food whose name
+// contains that token. We never invent an allergy that is not stored.
+// ---------------------------------------------------------------------------
+function allergyTokens(allergies?: string | null): string[] {
+  if (!allergies) return [];
+  return allergies
+    .split(/[,;]/)
+    .map((t) => t.trim().toLowerCase().replace(/\s+/g, " "))
+    .filter(Boolean);
+}
+
+function foodConflictsWithAllergies(food: PlannerFood, allergies?: string | null): boolean {
+  if (!allergies) return false;
+  const name = (food.name || "").toLowerCase();
+  return allergyTokens(allergies).some((t) => t.length > 0 && name.includes(t));
+}
+
 function rankFoodsForNutrient(
   foods: PlannerFood[],
   nutrient: NutrientKey,
   dietType: string,
   cuisinePreference?: string | null,
   count = 6,
+  allergies?: string | null,
+  category?: string,
 ): RankedFood[] {
   const unit = NUTRIENT_UNITS[nutrient];
   const ceiling = PLAUSIBLE_MAX[nutrient] ?? Number.POSITIVE_INFINITY;
@@ -155,6 +241,8 @@ function rankFoodsForNutrient(
   // app's own vetted foods while staying fully traced to the dataset.
   const scored = foods
     .filter((f) => f.dietTags.length === 0 || f.dietTags.includes(dietType))
+    .filter((f) => !foodConflictsWithAllergies(f, allergies))
+    .filter((f) => !category || matchesCategory(f, category))
     .map((f) => ({
       name: f.name,
       servingSize: f.servingSize,
@@ -311,8 +399,9 @@ function routeSpecialQuestions(input: BuildInput): string | null {
     return answerSubstitution(matchedFood?.label, input);
   }
 
-  // "Which foods should I avoid?" / "what should I not eat?"
-  if (/avoid|not eat|should not|cannot eat|can't eat/.test(q)) {
+  // "Which foods should I avoid?" / "what should I not eat?" /
+  // "Which foods interfere with / reduce or block [nutrient] absorption?"
+  if (/avoid|not eat|should not|cannot eat|can't eat|interfere|interferes|reduces?.*absorb|block(s|ed)?.*absorb|counteract/.test(q)) {
     return answerAvoidance(input);
   }
 
@@ -561,7 +650,14 @@ function answerSubstitution(foodLabel: string | undefined, input: BuildInput): s
 }
 
 function answerAvoidance(input: BuildInput): string {
-  const prioritizedNutrients = input.priorities.filter((p) => p.priority !== "low");
+  // If a specific nutrient was named, focus on its antagonists only; otherwise
+  // cover every non-low priority nutrient.
+  const asked = input.nutrient
+    ? input.priorities.find((p) => p.nutrient === input.nutrient)
+    : undefined;
+  const prioritizedNutrients = asked
+    ? [asked]
+    : input.priorities.filter((p) => p.priority !== "low");
 
   const parts: string[] = [];
   parts.push("Based on your N-REV assessment, here are foods to be mindful of:");
@@ -572,7 +668,7 @@ function answerAvoidance(input: BuildInput): string {
       const antagonists = getAntagonists(p.nutrient);
       if (antagonists.length > 0) {
         parts.push(`**${NUTRIENT_LABELS[p.nutrient]} (${p.priority} priority):**`);
-        for (const a of antagonists) {
+        for (const a of antagonists.slice(0, 8)) {
           parts.push(`- ${a.reason}`);
         }
       }
@@ -600,14 +696,290 @@ function answerAvoidance(input: BuildInput): string {
   return parts.filter(Boolean).join("\n");
 }
 
+// ---------------------------------------------------------------------------
+// Category, lab, BMI, plan-mapping, diet/allergy-suitability, and follow-up
+// handlers. These cover the remaining question surface so the assistant answers
+// profile- and dataset-grounded questions without restricting the user to a
+// small hard-coded intent list. Everything reuses the same ranking, diet,
+// allergy, and cuisine helpers defined above.
+// ---------------------------------------------------------------------------
+
+const CATEGORY_TERMS: Array<{ cat: string; terms: string[] }> = [
+  { cat: "fruits", terms: ["fruit", "fruits"] },
+  { cat: "vegetables", terms: ["vegetable", "vegetables", "veggie", "veggies"] },
+  { cat: "snacks", terms: ["snack", "snacks"] },
+  { cat: "pulses", terms: ["pulse", "pulses", "legume", "legumes", "dal", "dals", "lentil", "lentils", "bean", "beans", "chickpea", "chickpeas"] },
+  { cat: "grains", terms: ["grain", "grains", "cereal", "rice", "wheat", "millet", "millets", "roti", "chapati", "bread", "oats", "quinoa"] },
+  { cat: "dairy", terms: ["dairy", "milk", "curd", "yogurt", "yoghurt", "paneer", "ghee", "cheese", "buttermilk"] },
+  { cat: "nuts", terms: ["nut", "nuts", "almond", "almonds", "cashew", "cashews", "walnut", "walnuts", "peanut", "peanuts", "pistachio", "pistachios"] },
+  { cat: "seeds", terms: ["seed", "seeds", "flax", "chia", "sesame", "sunflower seed", "pumpkin seed", "sabja"] },
+  { cat: "beverages", terms: ["beverage", "beverages", "drink", "drinks", "juice", "smoothie", "milkshake", "buttermilk"] },
+];
+
+function detectCategory(q: string): string | null {
+  const n = normalize(q);
+  // Exact word match (normalize keeps words space-separated) so that broad
+  // terms like "nut" never match inside "nutrients" or "nutrition". The only
+  // multi-word terms are matched as contiguous phrases.
+  const words = new Set(n.split(" ").filter(Boolean));
+  for (const c of CATEGORY_TERMS) {
+    for (const term of c.terms) {
+      const parts = term.split(" ");
+      if (parts.length === 1) {
+        if (words.has(term)) return c.cat;
+      } else if (n.includes(term)) {
+        return c.cat;
+      }
+    }
+  }
+  return null;
+}
+
+// Follow-up support: "what should I eat for it?" / "what about it?" resolve an
+// antecedent nutrient or food from the most recent prior user message, so the
+// user never has to repeat the context. Returns null when the question is not
+// clearly a follow-up.
+function resolveFollowUpNutrient(
+  q: string,
+  history: Array<{ role: string; content: string }>,
+): NutrientKey | null {
+  const n = normalize(q);
+  const ambiguous =
+    /(for it|of it|on it|with it|about it|that nutrient|the one|which one|for that|that one|my biggest|main concern|top concern)/.test(
+      n,
+    );
+  if (!ambiguous) return null;
+  for (let i = history.length - 1; i >= 0; i--) {
+    const m = history[i];
+    if (m.role !== "user") continue;
+    const d = detectNutrient(m.content);
+    if (d) return d;
+  }
+  return null;
+}
+
+function resolveFollowUpFood(
+  history: Array<{ role: string; content: string }>,
+): string | null {
+  for (let i = history.length - 1; i >= 0; i--) {
+    const m = history[i];
+    if (m.role !== "user") continue;
+    const q = normalize(m.content);
+    const matched = FOOD_QUESTION_TERMS.find(({ term }) => q.includes(term));
+    if (matched) return matched.label;
+  }
+  return null;
+}
+
+function answerLabs(input: BuildInput): string {
+  const entries = Object.entries(input.labs);
+  const provided = entries.filter(([, l]) => l.provided);
+  const missing = entries.filter(([, l]) => !l.provided);
+  const parts: string[] = ["Here are your recorded lab values (from your profile):"];
+  if (provided.length === 0) {
+    parts.push("No lab values are currently recorded for this profile.");
+  } else {
+    parts.push("");
+    for (const [key, l] of provided) {
+      const label = LAB_LABELS[key] ?? key;
+      parts.push(`- ${label}: ${l.value} ${l.unit}`);
+    }
+  }
+  if (missing.length > 0) {
+    parts.push("");
+    parts.push("Not currently recorded for you, so I can't report these:");
+    for (const [key] of missing) {
+      parts.push(`- ${LAB_LABELS[key] ?? key}`);
+    }
+  }
+  if (input.labInsights.length > 0) {
+    parts.push("");
+    parts.push("Trend notes from your recorded lab history:");
+    for (const insight of input.labInsights) {
+      parts.push(`- ${insight}`);
+    }
+  }
+  parts.push("");
+  parts.push("I report only the values you have on record and never invent a lab result. Lab values are for tracking and discussion with your clinician — not a diagnosis.");
+  return parts.filter(Boolean).join("\n");
+}
+
+function answerBmi(input: BuildInput): string {
+  if (input.bmi === null || input.bmi === 0) {
+    return "I don't have height and weight on record for this profile, so I can't calculate your BMI. Add them in the Assessment and ask again.";
+  }
+  const parts: string[] = [];
+  parts.push(`Your BMI is ${Math.round(input.bmi * 10) / 10} (${input.bmiCategory ?? "category not classified"}).`);
+  parts.push("");
+  parts.push("This is calculated from your recorded height and weight only — it is a screening metric, not a diagnosis.");
+  return parts.join("\n");
+}
+
+function answerPrioritySummary(input: BuildInput): string {
+  const active = input.priorities.filter((p) => p.priority !== "low");
+  if (active.length === 0) {
+    return "I don't have prioritized recovery nutrients for this profile yet. Complete the Assessment (with your symptoms and any lab values) to generate priorities.";
+  }
+  const order: Record<string, number> = { high: 0, medium: 1, low: 2 };
+  const sorted = [...active].sort(
+    (a, b) =>
+      (order[a.priority] ?? 3) - (order[b.priority] ?? 3),
+  );
+  const parts: string[] = ["Based on your N-REV assessment, these are your recovery priority nutrients:"];
+  parts.push("");
+  for (const p of sorted) {
+    parts.push(`- ${priorityText(p)}`);
+    if (p.reasons && p.reasons.length) {
+      for (const r of p.reasons.slice(0, 3)) {
+        parts.push(`   · ${r}`);
+      }
+    }
+  }
+  parts.push("");
+  parts.push("Priorities are derived from your symptoms, diet type, and recorded lab values — not a diagnosis.");
+  return parts.filter(Boolean).join("\n");
+}
+
+function answerPlanFoodsForNutrient(input: BuildInput): string {
+  const top = highestPriorityNutrient(input.priorities);
+  const nutrient = input.nutrient ?? top?.nutrient;
+  if (!nutrient) {
+    return "Tell me which nutrient or deficiency you'd like me to map to your plan (e.g. 'which foods help my iron?').";
+  }
+  const ranked = input.rankFoods(nutrient);
+  const rankNames = new Set(ranked.map((r) => r.name));
+  const inPlan = input.dayFoods.filter((name) => rankNames.has(name));
+  const label = NUTRIENT_LABELS[nutrient];
+  const parts: string[] = [];
+  parts.push(
+    top
+      ? `Your main recovery focus is ${label} (${top.priority} priority).`
+      : `You asked about ${label}.`,
+  );
+  parts.push("");
+  if (inPlan.length === 0) {
+    parts.push("None of your Day 1 plan foods are currently ranked for this nutrient. I can only report foods traced to the dataset.");
+  } else {
+    parts.push("From your Day 1 recovery plan, these foods support this nutrient:");
+    for (const name of inPlan) {
+      parts.push(`- ${name}`);
+    }
+  }
+  parts.push("");
+  parts.push(`For reference, here are the top dataset foods for ${label} (matched to your diet and allergies):`);
+  for (const r of ranked.slice(0, 5)) {
+    parts.push(`- ${r.name} (${r.servingSize}) — ${formatValue(nutrient, r.value)}`);
+  }
+  parts.push("");
+  parts.push("This is nutrition-recovery support, not medical advice.");
+  return parts.filter(Boolean).join("\n");
+}
+
+function answerCategory(category: string, input: BuildInput): string {
+  const top = highestPriorityNutrient(input.priorities);
+  const nutrient = input.nutrient ?? top?.nutrient ?? "protein";
+  const ranked = rankFoodsForNutrient(
+    input.foods,
+    nutrient,
+    input.dietType,
+    input.cuisinePreference,
+    6,
+    input.assessment.allergies ?? undefined,
+    category,
+  );
+  const catLabel = category.replace(/_/g, " ");
+  const parts: string[] = [];
+  parts.push(
+    top
+      ? `Good ${catLabel} for you from the N-REV dataset, matched to your top priority (${NUTRIENT_LABELS[nutrient]}, ${top.priority} priority):`
+      : `Good ${catLabel} from the N-REV dataset, matched to your diet and allergies:`,
+  );
+  parts.push("");
+  if (ranked.length === 0) {
+    parts.push(`The N-REV dataset has no ${catLabel} that match your diet and allergy profile for this nutrient.`);
+  } else {
+    for (let i = 0; i < ranked.length; i++) {
+      const f = ranked[i];
+      parts.push(`${i + 1}. ${f.name} (${f.servingSize}) — ${formatValue(nutrient, f.value)}`);
+    }
+  }
+  if (input.cuisinePreference) {
+    parts.push("");
+    parts.push(`Foods were matched to your "${input.cuisinePreference}" preference where the dataset supports it.`);
+  }
+  if (input.assessment.allergies) {
+    parts.push("");
+    parts.push(`Foods that conflict with your recorded allergies (${input.assessment.allergies}) were excluded.`);
+  }
+  parts.push("");
+  parts.push("This is nutrition-recovery support, not medical advice.");
+  return parts.filter(Boolean).join("\n");
+}
+
+function answerDietAllergy(input: BuildInput): string {
+  const matchedFood = FOOD_QUESTION_TERMS.find(({ term }) =>
+    normalize(input.question).includes(term),
+  );
+  if (!matchedFood) {
+    return "Tell me which specific food you'd like me to check (for example 'is paneer okay for me?'), and I'll check it against your diet type and allergies.";
+  }
+  const foodInDataset = input.foods.find((f) =>
+    f.name.toLowerCase().includes(matchedFood.term),
+  );
+  const name = foodInDataset ? foodInDataset.name : matchedFood.label;
+  const parts: string[] = [`Checking "${name}" for you:`];
+  parts.push("");
+  const dietLabel = input.dietType.replace(/_/g, " ");
+  if (foodInDataset) {
+    const dietOk =
+      foodInDataset.dietTags.length === 0 ||
+      foodInDataset.dietTags.includes(input.dietType);
+    parts.push(
+      dietOk
+        ? `- Diet: compatible with your ${dietLabel} diet.`
+        : `- Diet: NOT compatible with your ${dietLabel} diet, so I would avoid it.`,
+    );
+  } else {
+    parts.push(`- Diet: I couldn't find "${matchedFood.term}" in the N-REV dataset, so I can't confirm its diet compatibility.`);
+  }
+  const conflicts = foodConflictsWithAllergies(
+    foodInDataset ?? ({ name } as PlannerFood),
+    input.assessment.allergies,
+  );
+  if (input.assessment.allergies) {
+    parts.push(
+      conflicts
+        ? `- Allergies: conflicts with your recorded allergies (${input.assessment.allergies}) — I would NOT recommend it.`
+        : `- Allergies: no conflict found with your recorded allergies (${input.assessment.allergies}).`,
+    );
+  } else {
+    parts.push("- Allergies: you have no allergies recorded, so no allergy conflict applies.");
+  }
+  if (conflicts) {
+    parts.push("");
+    parts.push("Because of the allergy conflict, I'm not recommending this food.");
+  }
+  parts.push("");
+  parts.push("This is nutrition-recovery support, not medical advice.");
+  return parts.filter(Boolean).join("\n");
+}
+
 function buildAnswer(input: BuildInput): string {
   const q = normalize(input.question);
   const cuisine = input.cuisinePreference?.toLowerCase().trim();
   const special = routeSpecialQuestions(input);
   if (special !== null) return special;
 
+  // 0) Lab-results and BMI questions are fully profile-grounded.
+  if (/lab|blood test|bloodwork|test results|my results/.test(q)) {
+    return answerLabs(input);
+  }
+  if (/bmi|body mass/.test(q)) {
+    return answerBmi(input);
+  }
+
   // 1) "Today" / "what should I eat" → use the actual Day 1 plan.
-  if (/today|what should i eat|meal plan|day 1|my plan/.test(q)) {
+  if (/today|meal plan|day 1|my plan/.test(q) || /^what should i eat$/.test(q)) {
     if (input.dayFoods.length === 0) {
       return "I don't have a generated recovery plan for you yet. Complete the Assessment to generate one, then I can walk you through today's foods.";
     }
@@ -637,8 +1009,27 @@ function buildAnswer(input: BuildInput): string {
     ].join("\n");
   }
 
-  // 3) Nutrient-focused question (iron, vitamin D, etc.)
-  let focus = input.nutrient;
+  // 3) Plan-mapping: "which foods in my plan help [nutrient/deficiency]?"
+  if (/in my.*plan|in your plan|from my plan/.test(q) && /(help|deficien|priorit|focus|good for)/.test(q)) {
+    return answerPlanFoodsForNutrient(input);
+  }
+
+  // 3b) Priority-nutrient summary: "which nutrients are lowest for me?",
+  //     "what am I deficient in?", "which nutrients should I focus on?".
+  if (!input.nutrient && /(nutrient|vitamin|mineral|deficien|lowest|missing|low in|should i focus|need most|improve first)/.test(q)) {
+    return answerPrioritySummary(input);
+  }
+
+  // 3b) Food-category questions (fruits, vegetables, snacks, pulses, etc.)
+  const category = detectCategory(q);
+  if (category) {
+    return answerCategory(category, input);
+  }
+
+  // 3c) Nutrient-focused question (iron, vitamin D, etc.), with follow-up
+  //     support: "what should I eat for it?" resolves the antecedent nutrient
+  //     from the previous user message in history.
+  let focus = input.nutrient ?? resolveFollowUpNutrient(q, input.history);
   let focusPriority = focus ? input.priorities.find((p) => p.nutrient === focus) : undefined;
 
   // "highest in the nutrient I am missing" / "top foods for my deficiency"
@@ -649,8 +1040,17 @@ function buildAnswer(input: BuildInput): string {
     focusPriority = top ?? focusPriority;
   }
 
+  // If the question is still an unresolved nutrient follow-up ("what should I
+  // eat for it?") and history had no explicit nutrient name, default to the
+  // top-priority nutrient so the answer stays relevant and profile-grounded.
+  if (!focus && /(for it|of it|with it|about it|that nutrient)/.test(q)) {
+    const top = highestPriorityNutrient(input.priorities);
+    focus = top?.nutrient ?? focus;
+    focusPriority = top ?? focusPriority;
+  }
+
   if (focus && focusPriority) {
-    const statusLine = priorityText(focusPriority);
+    const statusLine = `${focusPriority.priority} priority (daily target ${focusPriority.dailyTarget} ${NUTRIENT_UNITS[focus]})`;
     const topFoods = input.rankFoods(focus);
     const foodLines =
       topFoods.length > 0
@@ -681,6 +1081,17 @@ function buildAnswer(input: BuildInput): string {
       "",
       "This is not medical advice.",
     ].join("\n");
+  }
+
+  // 3d) Diet/allergy suitability: "is this food suitable / safe for me?"
+  if (/(suit|okay for|ok for|allowed|compatible|allergy|safe)/.test(q)) {
+    return answerDietAllergy(input);
+  }
+
+  // 3e) Follow-up food reference: "what about it?" resolves a food from history.
+  if (!input.nutrient && /(about it|about that|with it|for it|that one|on it)/.test(q)) {
+    const food = resolveFollowUpFood(input.history);
+    if (food) return answerFoodInteraction(food, input);
   }
 
   // 4) General fallback using the top (highest-priority) nutrient + dataset foods.
@@ -761,7 +1172,14 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
 
   const nutrient = detectNutrient(question);
   const rankFoods = (n: NutrientKey): RankedFood[] =>
-    rankFoodsForNutrient(foods, n, row.dietType, row.cuisinePreference, 6);
+    rankFoodsForNutrient(
+      foods,
+      n,
+      row.dietType,
+      row.cuisinePreference,
+      6,
+      row.allergies ?? undefined,
+    );
   const relevantFoodCandidates = nutrient ? rankFoods(nutrient) : [];
 
   // Labs: current profile values + historical comparison from labComparisons.

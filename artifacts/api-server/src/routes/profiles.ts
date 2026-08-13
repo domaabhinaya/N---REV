@@ -24,11 +24,8 @@ router.get("/profiles", async (_req, res): Promise<void> => {
 
 router.post("/profiles", async (req, res): Promise<void> => {
   try {
-    // ===== STEP 1: Debug logging of raw request body =====
-    console.log("[Backend] POST /api/profiles — Request body received");
-    console.log("[Backend] Raw body keys:", Object.keys(req.body));
-    console.log("[Backend] Raw body:", JSON.stringify(req.body, null, 2));
-
+    // Validate required fields manually below (the profile body may contain
+    // sensitive lab/health values, so the raw body is never logged).
     // ===== STEP 2: Validate required fields manually =====
     // NOTE: CreateProfileBody Zod schema restricts symptoms to only 14 enum values,
     // but the frontend sends 40+ symptom values (weight_loss, constipation, fever, etc.).

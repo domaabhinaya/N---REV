@@ -462,12 +462,15 @@ const { data: dashboard, isLoading: dashLoading } = useGetDashboard(profileId as
 
     // Prefer the dataset-grounded backend assistant; fall back to the local
     // heuristic only if the backend is unreachable or returns no answer.
+    // Pass the prior conversation (excluding the greeting) so the backend can
+    // resolve follow-ups like "what should I eat for it?".
     let answer: string;
     try {
+      const history = messages.slice(1).map((m) => ({ role: m.role, content: m.content }));
       const res = await fetch(`/api/assistant/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profileId, question: q }),
+        body: JSON.stringify({ profileId, question: q, history }),
       });
       const data = await res.json();
       answer =

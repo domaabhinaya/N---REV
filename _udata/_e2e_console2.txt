@@ -1,7 +1,0 @@
-﻿[E2E] health GET http://127.0.0.1:8099/api/healthz -> 200 (283ms)
-[E2E] foods(limit=500) GET http://127.0.0.1:8099/api/foods?limit=500 -> 200 (3932ms)
-[E2E] submit assessment (POST /profiles) POST http://127.0.0.1:8099/api/profiles -> 201 (24760ms)
-[E2E] generate recovery plan (GET /profiles/:id/recovery-plan) GET http://127.0.0.1:8099/api/profiles/12/recovery-plan -> 200 (44639ms)
-[E2E] targets (GET /profiles/:id/targets) GET http://127.0.0.1:8099/api/profiles/12/targets -> 200 (22042ms)
-
-[E2E] report written. profileId= 12

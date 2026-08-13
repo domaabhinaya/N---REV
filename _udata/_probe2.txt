@@ -1,9 +1,0 @@
-﻿=== lib/db/node_modules exists? ===
-True
-
-=== lib/db/node_modules/pg ? ===
-True
-
-=== resolve pg from lib/db ===
-C:\Users\Abhinaya Doma\OneDrive\Desktop\N-REV-main\node_modules\.pnpm\pg@8.22.0\node_modules\pg\lib\index.js
-
