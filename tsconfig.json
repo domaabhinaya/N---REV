@@ -15,6 +15,7 @@
   ],
   "compilerOptions": {
     "types": ["node", "vite/client", "react"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "noEmit": true
   }
 }
