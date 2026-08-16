@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useGetNutrientTargets, useGetRecoveryPlan, getGetNutrientTargetsQueryKey, getGetRecoveryPlanQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -388,8 +389,9 @@ export function RecoveryPlanPage() {
     }
   }, [profileId, setLocation]);
 
-  const { data: targets, isLoading: targetsLoading } = useGetNutrientTargets(profileId as number, { query: { enabled: !!profileId, queryKey: getGetNutrientTargetsQueryKey(profileId as number) } });
-  const { data: plan, isLoading: planLoading } = useGetRecoveryPlan(profileId as number, { query: { enabled: !!profileId, queryKey: getGetRecoveryPlanQueryKey(profileId as number) } });
+    const queryClient = useQueryClient();
+  const { data: targets, isLoading: targetsLoading, isError: targetsError } = useGetNutrientTargets(profileId as number, { query: { enabled: !!profileId, queryKey: getGetNutrientTargetsQueryKey(profileId as number) } });
+  const { data: plan, isLoading: planLoading, isError: planError } = useGetRecoveryPlan(profileId as number, { query: { enabled: !!profileId, queryKey: getGetRecoveryPlanQueryKey(profileId as number) } });
 
   const personalizedRecommendations = useMemo(() => {
     const recs: Recommendation[] = [];
@@ -447,7 +449,18 @@ export function RecoveryPlanPage() {
           </p>
         </div>
 
-        {targetsLoading ? (
+                {targetsError ? (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Unable to load nutrient priorities</AlertTitle>
+            <AlertDescription>
+              <p className="mb-2 text-sm">Nutrient targets could not be loaded (often a transient startup delay on the first request after a cold start).</p>
+              <Button size="sm" variant="secondary" onClick={() => queryClient.invalidateQueries({ queryKey: getGetNutrientTargetsQueryKey(profileId as number) })}>
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : targetsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Skeleton className="h-48 w-full" />
             <Skeleton className="h-48 w-full" />
@@ -502,7 +515,18 @@ export function RecoveryPlanPage() {
           </div>
         )}
 
-        {planLoading ? (
+                {planError ? (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Unable to load recovery plan</AlertTitle>
+            <AlertDescription>
+              <p className="mb-2 text-sm">The recovery plan could not be generated (often a transient startup delay or temporary backend error).</p>
+              <Button size="sm" variant="secondary" onClick={() => queryClient.invalidateQueries({ queryKey: getGetRecoveryPlanQueryKey(profileId as number) })}>
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : planLoading ? (
           <div className="space-y-2">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />

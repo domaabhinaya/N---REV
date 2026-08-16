@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "root": ".",
+  "builds": [
+    {
+      "src": "artifacts/api-server/src/app.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api",
+      "dest": "/artifacts/api-server/src/app.ts",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/artifacts/api-server/src/app.ts",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+    }
+  ]
+}

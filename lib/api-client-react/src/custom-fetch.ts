@@ -322,6 +322,201 @@ async function parseSuccessBody(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Resilience policy (permanent fix for intermittent failures)
+// ---------------------------------------------------------------------------
+// The recovery-plan endpoint is a `GET /profiles/:id/recovery-plan` that can
+// be served from a warm cache or recomputed server-side on demand. In practice
+// the cold-start recomputation (and occasional infra/network blips between the
+// Vite-built client and the backend origin) produced transient failures —
+// `customFetch` used to surface a single bare `fetch`, so a dropped connection
+// meant a hard error on the UI with no retry. That earlier, in-line-only
+// band-aid has been replaced with this retry policy in the shared mutator so
+// every generated caller benefits, and because `custom-fetch.ts` is an orval
+// *user-supplied* mutator (see `orval.config.ts` -> `mutator.path`), codegen
+// never overwrites it => this is the durable fix.
+//
+// Retry eligibility:
+//   * only bodyless requests (GET/HEAD/etc.) are retried — POST/PUT bodies are
+//     not safely re-playable on a stream that may already be consumed;
+//   * HTTP 408, 429, 500, 502, 503, 504 are retried (transient);
+//   * `AbortError` is never retried;
+//   * other 4xx responses (auth errors, validation, 404) are NOT retried —
+//     they are surfaced immediately as `ApiError` exactly as before.
+//
+// Backoff: exponential (300ms -> 600ms -> 1200ms) with jitter, capped at 5s,
+// and honours `Retry-After` when the server provides one.
+
+const RETRYABLE_STATUS = new Set<number>([408, 429, 500, 502, 503, 504]);
+const MAX_RETRIES = 3; // additional attempts after the initial fetch
+const BACKOFF_BASE_MS = 300;
+const MAX_BACKOFF_MS = 5000;
+const MAX_RETRY_AFTER_MS = 10000;
+
+// Hard ceiling on how long a single logical request (initial attempt + retries
+// + backoff) may occupy the caller. This exists because Vercel's Node.js
+// Functions are killed at the platform function timeout (~10s on Hobby) and
+// surface as a 504 — which `RETRYABLE_STATUS` above retries. Without a bound,
+// a cold-start 504 on every attempt can hold a loading spinner for tens of
+// seconds, and a stalled/non-responding invocation can hang the fetch
+// indefinitely (the spinner never resolves). 15s lets a genuine cold-start
+// 200 land (~1–4s) plus a warm retry after a transient 504, while capping the
+// worst case.
+const OVERALL_DEADLINE_MS = 15000;
+// Per-attempt ceiling. Kept just above Vercel's 10s function timeout so a real
+// response always wins the race; it only fires for an invocation that would
+// otherwise never return (stalled edge/TCP). A value below the function timeout
+// would wrongly abort legitimate (slow) cold-start successes.
+const PER_ATTEMPT_TIMEOUT_MS = 11000;
+
+// Marker error for our own per-attempt timeout. Distinguished from a real
+// `AbortError` (user cancellation) so timeouts remain retryable within the
+// overall deadline.
+export class TimeoutError extends Error {
+  readonly name = "TimeoutError" as const;
+}
+
+function isAbortError(err: unknown): boolean {
+  if (typeof err !== "object" || err === null) return false;
+  const { name, code } = err as { name?: unknown; code?: unknown };
+  return name === "AbortError" || code === "ABORT_ERR";
+}
+
+function isRetryableHttpStatus(status: number): boolean {
+  return RETRYABLE_STATUS.has(status);
+}
+
+// Honors the `Retry-After` header (delta-seconds or HTTP-date) but falls back
+// to the exponential schedule when the header is absent or unparseable.
+function parseRetryAfter(header: string | null): number | null {
+  if (!header) return null;
+  const seconds = Number(header);
+  if (!Number.isNaN(seconds) && seconds > 0) {
+    return Math.min(seconds, MAX_RETRY_AFTER_MS / 1000) * 1000;
+  }
+  return null; // HTTP-date form — let the caller fall back to the default backoff
+}
+
+function computeBackoff(retryAttempt: number, retryAfter: string | null): number {
+  const explicit = parseRetryAfter(retryAfter);
+  if (explicit !== null) return explicit;
+
+  const exponential = Math.min(BACKOFF_BASE_MS * 2 ** retryAttempt, MAX_BACKOFF_MS);
+  // ±30% jitter to avoid synchronized retry storms across clients.
+  const jitter = Math.random() * 0.3 * exponential;
+  return exponential + (Math.random() < 0.5 ? -jitter : jitter);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function fetchWithRetry(
+  input: RequestInfo | URL,
+  init: RequestInit,
+): Promise<Response> {
+  const deadline = Date.now() + OVERALL_DEADLINE_MS;
+  const parentSignal = init.signal;
+  let attempt = 0;
+  let lastError: unknown = null;
+  let timedOut = false;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // Overall budget exhausted: stop retrying and surface the last failure
+    // (or a TimeoutError if the stall never produced an HTTP status).
+    if (Date.now() >= deadline) {
+      throw lastError instanceof Error
+        ? lastError
+        : new TimeoutError("Request exceeded the overall deadline.");
+    }
+    // Per-attempt cap, but never larger than the remaining overall budget.
+    const attemptTimeout = Math.min(
+      PER_ATTEMPT_TIMEOUT_MS,
+      Math.max(deadline - Date.now(), 0),
+    );
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, attemptTimeout);
+    const onParentAbort = () => controller.abort();
+    parentSignal?.addEventListener("abort", onParentAbort);
+
+    try {
+      // Use our controller's signal (so we can abort on timeout) but mirror any
+      // parent cancellation (e.g. react-query unmounting) onto it.
+      const { signal: _omitted, ...rest } = init;
+      const response = await fetch(input, { ...rest, signal: controller.signal });
+
+      // Success or a non-retryable (e.g. 4xx) response is returned as-is so the
+      // caller's existing `if (!response.ok)` path handles the ApiError.
+      if (response.ok || !isRetryableHttpStatus(response.status)) return response;
+
+      // Retryable HTTP error. If we're out of attempts, return it so the caller
+      // throws `ApiError` exactly as before.
+      if (attempt >= MAX_RETRIES) return response;
+
+      const retryAfter = response.headers.get("retry-after");
+      await sleep(computeBackoff(attempt, retryAfter));
+    } catch (err) {
+      if (timedOut) {
+        // Our own timeout aborted the request — a retryable stall, not a user
+        // cancellation. Keep the loop going until the overall deadline.
+        lastError = new TimeoutError(`Attempt timed out after ${attemptTimeout}ms.`);
+      } else if (isAbortError(err)) {
+        // A real user-initiated cancellation (the parent signal was aborted,
+        // e.g. the component unmounted) — never retry.
+        throw err;
+      } else {
+        lastError = err;
+      }
+      if (attempt >= MAX_RETRIES || Date.now() >= deadline) throw lastError;
+      await sleep(computeBackoff(attempt, null));
+    } finally {
+      clearTimeout(timer);
+      parentSignal?.removeEventListener("abort", onParentAbort);
+      timedOut = false;
+    }
+    attempt += 1;
+  }
+}
+
+// Single (non-retried) attempt with a hard timeout. Used for requests that
+// carry a body (POST/PUT) and therefore cannot be safely replayed. Without a
+// timeout a stalled body request (e.g. /api/assistant/chat) would hang the
+// caller's loading state forever.
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const parentSignal = init.signal;
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const onParentAbort = () => controller.abort();
+  parentSignal?.addEventListener("abort", onParentAbort);
+  try {
+    const { signal: _omitted, ...rest } = init;
+    return await fetch(input, { ...rest, signal: controller.signal });
+  } catch (err) {
+    if (timedOut) {
+      throw new TimeoutError(`Request timed out after ${timeoutMs}ms.`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+    parentSignal?.removeEventListener("abort", onParentAbort);
+  }
+}
+
 export async function customFetch<T = unknown>(
   input: RequestInfo | URL,
   options: CustomFetchOptions = {},
@@ -360,7 +555,14 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  const fetchInit = { ...init, method, headers };
+    // Bodyless requests (e.g. GET /profiles/:id/recovery-plan) are retried on
+  // transient failures and bounded by an overall deadline so a cold-start 504
+  // can never hold the UI loading forever. Requests with a body are sent once
+  // but still respect a hard timeout so a stalled mutation can't hang either.
+  const response = init.body
+    ? await fetchWithTimeout(input, fetchInit, PER_ATTEMPT_TIMEOUT_MS)
+    : await fetchWithRetry(input, fetchInit);
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);
