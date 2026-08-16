@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, profilesTable } from "@workspace/db";
 import { GetProfileParams, UpdateProfileBody } from "@workspace/api-zod";
 import { getPrioritiesWithFoodSources } from "../lib/profile-service";
+import { resolveCuisine, DEFAULT_CUISINE } from "../lib/cuisine";
 import type { PlannerFood } from "../lib/meal-planner";
 import { getAllFoodsForRecommendations } from "../lib/food-lookup";
 
@@ -85,7 +86,7 @@ router.post("/profiles", async (req, res): Promise<void> => {
       symptoms: Array.isArray(body.symptoms) ? body.symptoms : [],
       // Optional fields — provide null (DB default) if not provided
       allergies: body.allergies != null ? String(body.allergies) : null,
-      cuisinePreference: body.cuisinePreference != null ? String(body.cuisinePreference) : null,
+      cuisinePreference: body.cuisinePreference != null ? resolveCuisine(body.cuisinePreference) : DEFAULT_CUISINE,
       budget: body.budget != null ? String(body.budget) : null,
       hemoglobin: body.hemoglobin != null ? Number(body.hemoglobin) : null,
       ferritin: body.ferritin != null ? Number(body.ferritin) : null,
@@ -222,7 +223,9 @@ router.put("/profiles/:profileId", async (req, res): Promise<void> => {
   const updateValues: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(parsed.data)) {
     if (value !== undefined) {
-      updateValues[key] = value;
+      // Persist the authoritative (resolved) cuisine, so an invalid/empty value
+      // normalises to the permanent "Indian" default on update too.
+      updateValues[key] = key === "cuisinePreference" ? resolveCuisine(value as string) : value;
     }
   }
 

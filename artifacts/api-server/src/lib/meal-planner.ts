@@ -1,6 +1,10 @@
 import type { FoodRow } from "@workspace/db";
 import type { NutrientPriorityResult, NutrientKey } from "./recovery-engine";
 import { sumNutrients, buildNutrientLines, type FoodNutrients, type NutrientLine, convertVitaminDUgToIU } from "./nutrition-calculator";
+// AUTHORITATIVE cuisine rule: the generators resolve the cuisine internally (with
+// a permanent "Indian" default) so EVERY caller — recovery plan, re-generation,
+// retry, AI-assisted, API-triggered — is protected even if it passes a raw value.
+import { resolveCuisine } from "./cuisine";
 
 export type PlannerFood = FoodRow;
 
@@ -168,10 +172,12 @@ export function generateRecoveryPlan(
   cuisinePreference?: string | null,
   durationDays = 30,
 ): RecoveryPlanResult {
-  const breakfastPool = rankByPriority(eligibleFoods(foods, dietType, "breakfast", allergies), priorities, cuisinePreference);
-  const lunchPool = rankByPriority(eligibleFoods(foods, dietType, "lunch", allergies), priorities, cuisinePreference);
-  const dinnerPool = rankByPriority(eligibleFoods(foods, dietType, "dinner", allergies), priorities, cuisinePreference);
-  const snackPool = rankByPriority(eligibleFoods(foods, dietType, "snack", allergies), priorities, cuisinePreference);
+  // Always apply the authoritative cuisine resolution (defaults to "Indian").
+  const cuisine = resolveCuisine(cuisinePreference);
+  const breakfastPool = rankByPriority(eligibleFoods(foods, dietType, "breakfast", allergies), priorities, cuisine);
+  const lunchPool = rankByPriority(eligibleFoods(foods, dietType, "lunch", allergies), priorities, cuisine);
+  const dinnerPool = rankByPriority(eligibleFoods(foods, dietType, "dinner", allergies), priorities, cuisine);
+  const snackPool = rankByPriority(eligibleFoods(foods, dietType, "snack", allergies), priorities, cuisine);
 
   const days: PlanDay[] = [];
   for (let day = 1; day <= durationDays; day++) {
@@ -209,6 +215,8 @@ export function topFoodSourcesForNutrient(
   count = 6,
   cuisinePreference?: string | null,
 ): string[] {
+  // Always apply the authoritative cuisine resolution (defaults to "Indian").
+  const cuisine = resolveCuisine(cuisinePreference);
   const fieldMap: Record<NutrientKey, keyof PlannerFood> = {
     protein: "protein",
     iron: "iron",
@@ -237,9 +245,9 @@ export function topFoodSourcesForNutrient(
       }
       // Cuisine affinity is a final tie-breaker among nutritionally equal,
       // same-tier foods (soft, non-excluding - never overrides nutrient ranking).
-      if (cuisinePreference) {
-        const affA = cuisineAffinity(a.f, cuisinePreference);
-        const affB = cuisineAffinity(b.f, cuisinePreference);
+      if (cuisine) {
+        const affA = cuisineAffinity(a.f, cuisine);
+        const affB = cuisineAffinity(b.f, cuisine);
         if (affB !== affA) return affB - affA;
       }
       return 0;

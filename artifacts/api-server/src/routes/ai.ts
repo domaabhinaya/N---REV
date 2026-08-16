@@ -34,6 +34,7 @@ import {
   classifyCuisine,
   matchesCategory,
 } from "../lib/food-classifier";
+import { resolveCuisine, cuisineStatement } from "../lib/cuisine";
 
 // Lab value display metadata. Values come from the profile row and the
 // historical lab_comparisons records; these constants supply the standard
@@ -905,7 +906,7 @@ function answerCategory(category: string, input: BuildInput): string {
   }
   if (input.cuisinePreference) {
     parts.push("");
-    parts.push(`Foods were matched to your "${input.cuisinePreference}" preference where the dataset supports it.`);
+    parts.push(cuisineStatement(resolveCuisine(input.cuisinePreference)));
   }
   if (input.assessment.allergies) {
     parts.push("");
@@ -991,7 +992,7 @@ function buildAnswer(input: BuildInput): string {
       list,
       "",
       `Your key recovery focus is ${top ? priorityText(top) : "balanced nutrition"}.`,
-      cuisine ? `Food selection was biased toward your "${input.cuisinePreference}" preference where the dataset supports it.` : "",
+      cuisine ? cuisineStatement(resolveCuisine(input.cuisinePreference)) : "",
       "",
       "This is nutrition-recovery support, not medical advice.",
     ].filter(Boolean).join("\n");
@@ -1144,6 +1145,9 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
     return;
   }
 
+  // AUTHORITATIVE cuisine rule (backend-enforced): missing/invalid resolves to "Indian".
+  const cuisine = resolveCuisine(row.cuisinePreference);
+
   const foods = await getAllFoodsForRecommendations();
   const priorities = getPrioritiesWithFoodSources(row, foods);
   const targets = targetsMap(priorities);
@@ -1156,7 +1160,7 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
     row.allergies,
     priorities,
     targets,
-    row.cuisinePreference,
+    cuisine,
     row.recoveryDuration ?? 30,
   );
   const planExplanation = generatePlanExplanation(
@@ -1176,7 +1180,7 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
       foods,
       n,
       row.dietType,
-      row.cuisinePreference,
+      cuisine,
       6,
       row.allergies ?? undefined,
     );
@@ -1223,7 +1227,7 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
   const assessment: AssessmentInfo = {
     dietType: row.dietType,
     allergies: row.allergies,
-    cuisinePreference: row.cuisinePreference,
+    cuisinePreference: cuisine,
     age: row.age,
     gender: row.gender,
     heightCm: row.heightCm,
@@ -1240,7 +1244,7 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
     foods,
     targets,
     rankFoods,
-    cuisinePreference: row.cuisinePreference,
+    cuisinePreference: cuisine,
     dietType: row.dietType,
     symptoms: row.symptoms ?? [],
     assessment,
@@ -1261,7 +1265,7 @@ router.post("/assistant/chat", async (req, res): Promise<void> => {
         age: row.age,
         gender: row.gender,
         dietType: row.dietType,
-        cuisinePreference: row.cuisinePreference,
+        cuisinePreference: cuisine,
         allergies: row.allergies,
       },
       nutrientStatus: priorities.map((p) => ({

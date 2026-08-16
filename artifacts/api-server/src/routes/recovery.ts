@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, profilesTable, foodsTable } from "@workspace/db";
 import { GetRecoveryPlanParams, GetNutrientTargetsParams } from "@workspace/api-zod";
 import { getPrioritiesWithFoodSources, targetsMap, toProfileInput } from "../lib/profile-service";
+import { resolveCuisine } from "../lib/cuisine";
 import { generateRecoveryPlan, type PlannerFood } from "../lib/meal-planner";
 import type { NutrientLine } from "../lib/nutrition-calculator";
 import { generatePlanExplanation } from "../lib/recovery-engine";
@@ -71,7 +72,7 @@ router.get("/profiles/:profileId/recovery-plan", async (req, res): Promise<void>
   const { normalized: routineNormalized } = getUserRoutineContext(row);
   const routineInsights = buildRoutineInsights(routineNormalized, priorities);
 
-  const plan = generateRecoveryPlan(foods, row.dietType, row.allergies, priorities, targets, row.cuisinePreference, row.recoveryDuration ?? 30);
+  const plan = generateRecoveryPlan(foods, row.dietType, row.allergies, priorities, targets, resolveCuisine(row.cuisinePreference), row.recoveryDuration ?? 30);
   const profileInput = toProfileInput(row);
   const planExplanation = generatePlanExplanation(profileInput, priorities, routineInsights);
 
